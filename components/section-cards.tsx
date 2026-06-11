@@ -9,101 +9,113 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { IconTrendingUp, IconTrendingDown } from "@tabler/icons-react"
+import {
+  IconTrendingUp,
+  IconLeaf,
+  IconTrash,
+  IconHistory,
+  IconCpu,
+} from "@tabler/icons-react"
 
-export function SectionCards() {
+interface SectionCardsProps {
+  total: number
+  organic: number
+  nonOrganic: number
+  accuracy: number
+}
+
+export function SectionCards({ total, organic, nonOrganic, accuracy }: SectionCardsProps) {
+  const organicPercent = total > 0 ? Math.round((organic / total) * 100) : 0
+  const nonOrganicPercent = total > 0 ? Math.round((nonOrganic / total) * 100) : 0
+
   return (
-    <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+    <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 md:grid-cols-2 lg:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+      {/* Total Klasifikasi */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+          <CardDescription className="font-medium">Total Klasifikasi</CardDescription>
+          <CardTitle className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">
+            {total}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp
-              />
-              +12.5%
-            </Badge>
+            <div className="p-2 bg-primary/10 text-primary rounded-lg">
+              <IconHistory className="size-5" />
+            </div>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month{" "}
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="line-clamp-1 flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
             <IconTrendingUp className="size-4" />
+            Aktif & Responsif
           </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
-          </div>
+          <div className="text-muted-foreground">Jumlah gambar yang diproses</div>
         </CardFooter>
       </Card>
+
+      {/* Sampah Organik */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+          <CardDescription className="font-medium">Sampah Organik</CardDescription>
+          <CardTitle className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">
+            {organic}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown
-              />
-              -20%
-            </Badge>
+            <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg">
+              <IconLeaf className="size-5" />
+            </div>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period{" "}
-            <IconTrendingDown className="size-4" />
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="flex items-center gap-1.5 font-medium">
+            <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-none">
+              {organicPercent}% dari total
+            </Badge>
           </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
-          </div>
+          <div className="text-muted-foreground">Siap diolah menjadi kompos</div>
         </CardFooter>
       </Card>
+
+      {/* Sampah Non-Organik */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+          <CardDescription className="font-medium">Sampah Non-Organik</CardDescription>
+          <CardTitle className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">
+            {nonOrganic}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp
-              />
-              +12.5%
-            </Badge>
+            <div className="p-2 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-lg">
+              <IconTrash className="size-5" />
+            </div>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention{" "}
-            <IconTrendingUp className="size-4" />
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="flex items-center gap-1.5 font-medium">
+            <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-none">
+              {nonOrganicPercent}% dari total
+            </Badge>
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
+          <div className="text-muted-foreground">Siap dipilah untuk daur ulang</div>
         </CardFooter>
       </Card>
+
+      {/* Akurasi Model */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
+          <CardDescription className="font-medium">Akurasi Model KNN</CardDescription>
+          <CardTitle className="text-2xl font-bold tabular-nums @[250px]/card:text-3xl">
+            {(accuracy * 100).toFixed(1)}%
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp
-              />
-              +4.5%
-            </Badge>
+            <div className="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg">
+              <IconCpu className="size-5" />
+            </div>
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase{" "}
-            <IconTrendingUp className="size-4" />
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="flex items-center gap-1.5 font-medium text-amber-600 dark:text-amber-400">
+            Status: Optimal (K=7)
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">Akurasi pada dataset uji</div>
         </CardFooter>
       </Card>
     </div>

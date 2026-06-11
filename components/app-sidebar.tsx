@@ -1,11 +1,9 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -15,168 +13,56 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconDashboard, IconListDetails, IconChartBar, IconFolder, IconUsers, IconCamera, IconFileDescription, IconFileAi, IconSettings, IconHelp, IconSearch, IconDatabase, IconReport, IconFileWord, IconInnerShadowTop } from "@tabler/icons-react"
+import {
+  IconLayoutDashboard,
+  IconRecycle,
+  IconChartBar,
+  IconHistory,
+  IconLeaf,
+  IconInfoCircle,
+  IconUser,
+} from "@tabler/icons-react"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
-      icon: (
-        <IconDashboard
-        />
-      ),
+      url: "/dashboard",
+      icon: IconLayoutDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: (
-        <IconListDetails
-        />
-      ),
+      title: "Klasifikasi Sampah",
+      url: "/dashboard/classification",
+      icon: IconRecycle,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: (
-        <IconChartBar
-        />
-      ),
+      title: "Performa Model",
+      url: "/dashboard/performance",
+      icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: (
-        <IconFolder
-        />
-      ),
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: (
-        <IconUsers
-        />
-      ),
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: (
-        <IconCamera
-        />
-      ),
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: (
-        <IconFileDescription
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: (
-        <IconFileAi
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Riwayat Klasifikasi",
+      url: "/dashboard/history",
+      icon: IconHistory,
     },
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
-      icon: (
-        <IconSettings
-        />
-      ),
+      title: "Panduan Pengelolaan",
+      url: "/dashboard/guide",
+      icon: IconLeaf,
     },
     {
-      title: "Get Help",
-      url: "#",
-      icon: (
-        <IconHelp
-        />
-      ),
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: (
-        <IconSearch
-        />
-      ),
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: (
-        <IconDatabase
-        />
-      ),
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: (
-        <IconReport
-        />
-      ),
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: (
-        <IconFileWord
-        />
-      ),
+      title: "Tentang Sistem",
+      url: "/dashboard/about",
+      icon: IconInfoCircle,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -184,23 +70,80 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
+              className="data-[slot=sidebar-menu-button]:p-1.5! hover:bg-sidebar-accent"
             >
-              <a href="#">
-                <IconInnerShadowTop className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
-              </a>
+              <Link href="/dashboard">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <IconRecycle className="size-5" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-semibold text-base">WasteSort</span>
+                  <span className="text-xs text-muted-foreground">KNN Classifier</span>
+                </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+
+      <SidebarContent className="flex flex-col justify-between py-4">
+        {/* Main Navigation */}
+        <SidebarMenu className="px-2 space-y-1">
+          {data.navMain.map((item) => {
+            const isActive = pathname === item.url || (item.url !== "/dashboard" && pathname.startsWith(item.url))
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={item.title}
+                  className="data-[slot=sidebar-menu-button]:p-2.5! rounded-xl transition-all"
+                >
+                  <Link href={item.url} className="flex items-center gap-3">
+                    <item.icon className={`size-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className="font-medium text-sm">{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          })}
+        </SidebarMenu>
+
+        {/* Secondary Navigation (Bottom) */}
+        <div className="mt-auto">
+          <SidebarMenu className="px-2 space-y-1">
+            {data.navSecondary.map((item) => {
+              const isActive = pathname === item.url
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.title}
+                    className="data-[slot=sidebar-menu-button]:p-2.5! rounded-xl transition-all"
+                  >
+                    <Link href={item.url} className="flex items-center gap-3">
+                      <item.icon className={`size-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                      <span className="font-medium text-sm">{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+        </div>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
+
+      <SidebarFooter className="border-t border-sidebar-border/50 p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground border">
+            <IconUser className="size-5" />
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-semibold truncate">Demo User</span>
+            <span className="text-xs text-muted-foreground truncate">Peneliti / Umum</span>
+          </div>
+        </div>
       </SidebarFooter>
     </Sidebar>
   )
