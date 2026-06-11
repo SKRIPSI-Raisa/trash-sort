@@ -67,4 +67,5 @@ Dokumen ini melacak perkembangan pembangunan antarmuka (UI) untuk MVP WasteSort.
 - **Pekerjaan:**
   - [x] Halaman statis R6 (Panduan Pengelolaan) & R7 (Tentang Sistem)
   - [x] Optimasi transisi dark mode & loading skeleton per rute
+  - [x] Pembuatan komponen navigasi mobile Floating Bottom Bar yang rounded & glassmorphic
   - [x] Pengujian automated build (`npm run lint`, `npm run typecheck`, `npm run build`)
