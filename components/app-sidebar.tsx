@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import {
   Sidebar,
@@ -21,6 +22,7 @@ import {
   IconLeaf,
   IconInfoCircle,
   IconUser,
+  IconLogout,
 } from "@tabler/icons-react"
 
 const data = {
@@ -62,6 +64,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const router = useRouter()
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -135,14 +138,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border/50 p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground border">
-            <IconUser className="size-5" />
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground border shrink-0">
+              <IconUser className="size-5" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold truncate">Demo User</span>
+              <span className="text-xs text-muted-foreground truncate">Peneliti / Umum</span>
+            </div>
           </div>
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold truncate">Demo User</span>
-            <span className="text-xs text-muted-foreground truncate">Peneliti / Umum</span>
-          </div>
+          <button
+            onClick={() => {
+              toast.success("Anda telah keluar dari sistem.")
+              router.push("/login")
+            }}
+            className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all cursor-pointer shrink-0"
+            title="Keluar"
+          >
+            <IconLogout className="size-5" />
+          </button>
         </div>
       </SidebarFooter>
     </Sidebar>
