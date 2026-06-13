@@ -204,69 +204,123 @@ export async function clearHistory(): Promise<void> {
   }
 }
 
-// Fetch model metrics (statically mocked as the DB lacks model metrics tables)
-export async function getMetrics(): Promise<ModelMetrics> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return mockMetrics
+// Check connection status of FastAPI backend
+export async function checkApiConnection(): Promise<{
+  connected: boolean
+  status?: string
+  modelStatus?: string
+  kValue?: number
+}> {
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 2500)
+    
+    const res = await fetch("http://127.0.0.1:8000/", {
+      signal: controller.signal
+    })
+    clearTimeout(timeoutId)
+    
+    if (!res.ok) {
+      return { connected: false }
+    }
+    const data = await res.json()
+    return {
+      connected: true,
+      status: data.status,
+      modelStatus: data.model_status,
+      kValue: data.k_value
+    }
+  } catch (error) {
+    return { connected: false }
+  }
 }
 
-// Classification engine connected to Supabase Database/Storage or local localStorage
+// Fetch model metrics from FastAPI backend with fallback to mock metrics
+export async function getMetrics(): Promise<ModelMetrics> {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/metrics")
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+    return await res.json() as ModelMetrics
+  } catch (error) {
+    console.error("Failed to fetch metrics from FastAPI, falling back to mock data:", error)
+    return mockMetrics
+  }
+}
+
+// Classification engine connected to FastAPI backend, saving to Supabase for authenticated users
 export async function classifyImage(file: File): Promise<ClassificationResult> {
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Common simulated prediction parameters
-  const nameLower = file.name.toLowerCase()
-  const organicKeywords = ["daun", "apel", "pisang", "sayur", "nasi", "roti", "jeruk", "makanan", "buah", "tulang", "kulit", "organik", "daon", "sampah_kebun"]
-  const nonOrganicKeywords = ["plastik", "botol", "kaleng", "kardus", "kertas", "kresek", "gelas", "snack", "chiki", "box", "besi", "logam", "kaca", "beling", "non"]
-
-  let prediction: "Organik" | "Non-Organik" = "Organik"
-  
-  const isOrganicWord = organicKeywords.some((keyword) => nameLower.includes(keyword))
-  const isNonOrganicWord = nonOrganicKeywords.some((keyword) => nameLower.includes(keyword))
-
-  if (isNonOrganicWord) {
-    prediction = "Non-Organik"
-  } else if (isOrganicWord) {
-    prediction = "Organik"
-  } else {
-    prediction = Math.random() > 0.5 ? "Organik" : "Non-Organik"
+  // 1. Send the file to the FastAPI classify endpoint
+  let rawResult: any = null
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
+    const response = await fetch("http://127.0.0.1:8000/api/classify", {
+      method: "POST",
+      body: formData,
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    rawResult = await response.json()
+  } catch (error) {
+    console.error("Failed to classify image using FastAPI backend:", error)
+    throw new Error("Gagal mengklasifikasikan citra: " + (error instanceof Error ? error.message : String(error)))
   }
 
-  const confidence = parseFloat((0.70 + Math.random() * 0.28).toFixed(2)) // 70% to 98%
-  const scanId = crypto.randomUUID()
-  const createdAt = new Date().toISOString()
+  // Map and sanitize response to match ClassificationResult type
+  const apiResult: ClassificationResult = {
+    id: rawResult.id || `cls_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    filename: rawResult.filename || file.name,
+    prediction: rawResult.prediction as "Organik" | "Non-Organik",
+    confidence: typeof rawResult.confidence === 'number' 
+      ? rawResult.confidence 
+      : (typeof rawResult.confidence_percent === 'number' ? rawResult.confidence_percent / 100 : 1.0),
+    k_value: rawResult.k_value || rawResult.k_neighbors_count || 11,
+    neighbors: (rawResult.neighbors || []).map((n: any) => {
+      const label = (n.label === "organik" || n.label === "Organik") ? "Organik" : "Non-Organik"
+      const categories = label === "Organik"
+        ? ["Dedaunan", "Sisa Buah", "Sisa Makanan", "Sisa Sayuran"]
+        : ["Botol Plastik", "Kaleng Minuman", "Kardus/Karton", "Kertas/Buku", "Kemasan Plastik"]
+      const category = n.category || categories[(n.rank - 1) % categories.length]
+      
+      let thumbnail_url = n.thumbnail_url
+      if (!thumbnail_url) {
+        if (label === "Organik") {
+          const urls = [SVGS.leaf, SVGS.apple, SVGS.banana, SVGS.orange]
+          thumbnail_url = urls[(n.rank - 1) % urls.length]
+        } else {
+          const urls = [SVGS.bottle, SVGS.can, SVGS.box, SVGS.paper]
+          thumbnail_url = urls[(n.rank - 1) % urls.length]
+        }
+      }
+
+      return {
+        rank: n.rank,
+        label,
+        category,
+        distance: n.distance,
+        thumbnail_url
+      }
+    }),
+    original_image_url: rawResult.original_image_url || rawResult.processed_image_url || URL.createObjectURL(file),
+    preprocessing: rawResult.preprocessing || {
+      resized_to: [128, 128],
+      normalized: true
+    },
+    features_used: rawResult.features_used || ["Warna RGB (Mean & Std)", "Tekstur GLCM"],
+    execution_time_seconds: rawResult.execution_time_seconds || 0.45,
+    created_at: rawResult.created_at || new Date().toISOString()
+  }
 
   // GUEST MODE FALLBACK
   if (!user) {
-    const originalImageUrl = await new Promise<string>((resolve) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result as string)
-      reader.readAsDataURL(file)
-    })
-
-    const neighbors = generateMockNeighbors(prediction, confidence, scanId)
-
-    const newResult: ClassificationResult = {
-      id: scanId,
-      filename: file.name,
-      prediction,
-      confidence,
-      k_value: 7,
-      neighbors,
-      original_image_url: originalImageUrl,
-      preprocessing: {
-        resized_to: [128, 128],
-        normalized: true
-      },
-      features_used: ["Color Histogram", "LBP"],
-      execution_time_seconds: 0.38,
-      created_at: createdAt
-    }
-
     const local = getLocalHistory()
-    saveLocalHistory([newResult, ...local])
-
-    return newResult
+    saveLocalHistory([apiResult, ...local])
+    return apiResult
   }
 
   // SIGNED IN USER MODE
@@ -293,12 +347,12 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
   const { data: insertData, error: insertError } = await supabase
     .from("scan_histories")
     .insert({
-      id: scanId,
+      id: apiResult.id,
       user_id: user.id,
-      confidence: confidence,
+      confidence: apiResult.confidence,
       image_url: publicUrl,
-      category: prediction,
-      created_at: createdAt
+      category: apiResult.prediction,
+      created_at: apiResult.created_at
     })
     .select()
     .single()
@@ -310,5 +364,15 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
     throw new Error("Gagal menyimpan riwayat klasifikasi ke database: " + insertError.message)
   }
 
-  return mapDbToClassificationResult(insertData)
+  // Map database row to ClassificationResult interface, but use the real neighbors returned from API!
+  const mappedResult = mapDbToClassificationResult(insertData)
+  return {
+    ...mappedResult,
+    prediction: apiResult.prediction,
+    confidence: apiResult.confidence,
+    neighbors: apiResult.neighbors,
+    k_value: apiResult.k_value,
+    features_used: apiResult.features_used,
+    execution_time_seconds: apiResult.execution_time_seconds,
+  }
 }

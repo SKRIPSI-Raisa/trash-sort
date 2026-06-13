@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { toast } from "sonner"
-import { classifyImage } from "@/lib/api"
+import { classifyImage, checkApiConnection } from "@/lib/api"
 import { ClassificationResult } from "@/lib/types"
 import { WasteBadge } from "@/components/waste-badge"
 import { ConfidenceBar } from "@/components/confidence-bar"
@@ -11,6 +11,8 @@ import { ProcessingStepper } from "@/components/processing-stepper"
 import { WasteGuideCard } from "@/components/waste-guide-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CameraCapture } from "@/components/camera-capture"
 import {
   IconUpload,
   IconPhoto,
@@ -21,7 +23,9 @@ import {
   IconHelpCircle,
   IconClock,
   IconSettings,
+  IconCamera,
 } from "@tabler/icons-react"
+
 
 export default function Page() {
   const [file, setFile] = React.useState<File | null>(null)
@@ -30,6 +34,36 @@ export default function Page() {
   const [appState, setAppState] = React.useState<"upload" | "processing" | "result">("upload")
   const [currentStep, setCurrentStep] = React.useState(1)
   const [result, setResult] = React.useState<ClassificationResult | null>(null)
+  
+  // API Connection State
+  const [apiConnected, setApiConnected] = React.useState<boolean | null>(null)
+  const [checkingApi, setCheckingApi] = React.useState(false)
+  const [apiDetails, setApiDetails] = React.useState<{ modelStatus?: string; kValue?: number } | null>(null)
+
+  const verifyApiConnection = React.useCallback(async () => {
+    setCheckingApi(true)
+    try {
+      const status = await checkApiConnection()
+      setApiConnected(status.connected)
+      if (status.connected) {
+        setApiDetails({
+          modelStatus: status.modelStatus,
+          kValue: status.kValue
+        })
+      } else {
+        setApiDetails(null)
+      }
+    } catch {
+      setApiConnected(false)
+      setApiDetails(null)
+    } finally {
+      setCheckingApi(false)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    verifyApiConnection()
+  }, [verifyApiConnection])
   
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -157,12 +191,52 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
   return (
     <div className="space-y-6 px-4 lg:px-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-5">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-extrabold tracking-tight">Klasifikasi Sampah</h1>
           <p className="text-muted-foreground text-sm">
             Unggah foto sampah rumah tangga untuk klasifikasi otomatis Organik atau Non-Organik.
           </p>
+        </div>
+
+        {/* API Status Badge */}
+        <div className="flex items-center gap-2.5 bg-muted/40 hover:bg-muted/60 border rounded-xl px-3.5 py-1.5 transition-all duration-200 self-start md:self-auto">
+          <div className="relative flex h-2.5 w-2.5">
+            {checkingApi ? (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            ) : apiConnected ? (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            ) : (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive/60 opacity-75"></span>
+            )}
+            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+              checkingApi ? "bg-blue-500" : apiConnected ? "bg-emerald-500" : "bg-destructive"
+            }`}></span>
+          </div>
+
+          <div className="flex flex-col text-left">
+            <span className="text-xs font-semibold text-foreground leading-tight">
+              {checkingApi ? "Memeriksa API..." : apiConnected ? "API Terhubung" : "API Terputus"}
+            </span>
+            <span className="text-[10px] text-muted-foreground leading-tight">
+              {checkingApi 
+                ? "Menghubungi backend..." 
+                : apiConnected 
+                  ? `FastAPI Aktif (K=${apiDetails?.kValue || 11})` 
+                  : "FastAPI Offline"}
+            </span>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground ml-1"
+            onClick={verifyApiConnection}
+            disabled={checkingApi}
+          >
+            <IconRefresh className={`h-3.5 w-3.5 ${checkingApi ? "animate-spin" : ""}`} />
+            <span className="sr-only">Refresh Status</span>
+          </Button>
         </div>
       </div>
 
@@ -172,36 +246,67 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
           {/* Dropzone / Preview */}
           <div className="lg:col-span-2">
             {!previewUrl ? (
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={triggerFileInput}
-                className={`flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 min-h-[350px] ${
-                  isDragging
-                    ? "border-primary bg-primary/5 scale-[0.99] shadow-inner"
-                    : "border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/5"
-                }`}
-              >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                />
+              <div className="space-y-4 animate-fade-in">
+                {apiConnected === false && (
+                  <div className="flex items-start gap-3 p-4 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive dark:text-destructive-foreground text-xs">
+                    <IconInfoCircle className="size-5 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="font-semibold block mb-0.5">API Backend Offline</strong>
+                      Klasifikasi memerlukan FastAPI backend aktif. Silakan jalankan API KNN dengan perintah <code>python app.py</code> di folder KNN.
+                    </div>
+                  </div>
+                )}
                 
-                <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-                  <IconUpload className="size-8 animate-bounce" />
-                </div>
-                
-                <h3 className="text-lg font-bold">Tarik & Letakkan foto sampah</h3>
-                <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-                  Format gambar yang didukung: <strong>JPG, PNG, WEBP</strong>. Maksimal ukuran file 10MB.
-                </p>
-                <Button variant="outline" className="mt-6 rounded-xl">
-                  Pilih dari Galeri
-                </Button>
+                <Tabs defaultValue="upload-file" className="w-full">
+                  <TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-4 bg-muted/65 p-1 rounded-xl">
+                    <TabsTrigger value="upload-file" className="rounded-lg py-2 font-semibold text-xs sm:text-sm cursor-pointer">
+                      <IconUpload className="size-4 mr-2" />
+                      Unggah File
+                    </TabsTrigger>
+                    <TabsTrigger value="camera" className="rounded-lg py-2 font-semibold text-xs sm:text-sm cursor-pointer">
+                      <IconCamera className="size-4 mr-2" />
+                      Ambil Foto
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="upload-file" className="mt-0 focus-visible:ring-0 focus-visible:outline-none">
+                    <div
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onClick={triggerFileInput}
+                      className={`flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 min-h-[350px] ${
+                        isDragging
+                          ? "border-primary bg-primary/5 scale-[0.99] shadow-inner"
+                          : "border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/5"
+                      }`}
+                    >
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                      />
+                      
+                      <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                        <IconUpload className="size-8 animate-bounce" />
+                      </div>
+                      
+                      <h3 className="text-lg font-bold">Tarik & Letakkan foto sampah</h3>
+                      <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+                        Format gambar yang didukung: <strong>JPG, PNG, WEBP</strong>. Maksimal ukuran file 10MB.
+                      </p>
+                      <Button variant="outline" className="mt-6 rounded-xl">
+                        Pilih dari Galeri
+                      </Button>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="camera" className="mt-0 focus-visible:ring-0 focus-visible:outline-none">
+                    <CameraCapture onCapture={validateAndSetFile} />
+                  </TabsContent>
+                </Tabs>
               </div>
             ) : (
               <Card className="overflow-hidden">
@@ -219,13 +324,24 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
                     </p>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between border-t p-4">
-                  <Button variant="ghost" onClick={handleReset} className="rounded-xl">
+                <CardFooter className="flex flex-col sm:flex-row items-center justify-between border-t p-4 gap-3">
+                  <Button variant="ghost" onClick={handleReset} className="rounded-xl w-full sm:w-auto">
                     Ganti Gambar
                   </Button>
-                  <Button onClick={handleClassify} className="rounded-xl px-6 bg-primary hover:bg-primary/95 text-primary-foreground font-semibold">
-                    Klasifikasikan Sekarang
-                  </Button>
+                  <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    {apiConnected === false && (
+                      <span className="text-xs text-destructive font-medium text-center sm:text-right">
+                        API tidak aktif. Klasifikasi dinonaktifkan.
+                      </span>
+                    )}
+                    <Button 
+                      onClick={handleClassify} 
+                      disabled={apiConnected === false}
+                      className="rounded-xl px-6 bg-primary hover:bg-primary/95 text-primary-foreground font-semibold w-full sm:w-auto"
+                    >
+                      Klasifikasikan Sekarang
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             )}
