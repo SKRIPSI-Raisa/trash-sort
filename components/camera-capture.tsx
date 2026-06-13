@@ -138,7 +138,7 @@ export function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center bg-zinc-950 text-white border border-zinc-800 rounded-2xl overflow-hidden min-h-[400px] aspect-video">
+    <div className="relative flex flex-col items-center justify-center bg-zinc-950 text-white border border-zinc-800 rounded-2xl overflow-hidden min-h-[300px] sm:min-h-[400px] aspect-square sm:aspect-video">
       {/* Video element */}
       {!error && (
         <video
@@ -160,7 +160,7 @@ export function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
           <div className="absolute inset-0 bg-black/45" />
           
           {/* Target box */}
-          <div className="relative w-72 h-72 border-2 border-dashed border-emerald-400 rounded-2xl flex items-center justify-center bg-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)] z-10">
+          <div className="relative w-44 h-44 sm:w-72 sm:h-72 border-2 border-dashed border-emerald-400 rounded-2xl flex items-center justify-center bg-transparent shadow-[0_0_15px_rgba(16,185,129,0.2)] z-10">
             {/* Target corners */}
             <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-emerald-400 -mt-[2px] -ml-[2px] rounded-tl-lg" />
             <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-emerald-400 -mt-[2px] -mr-[2px] rounded-tr-lg" />
@@ -171,7 +171,7 @@ export function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
             <div className="absolute top-0 left-0 right-0 h-[3px] bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-scan" />
           </div>
 
-          <div className="absolute bottom-24 text-center bg-black/60 px-4 py-1.5 rounded-full text-xs font-medium tracking-wide border border-white/10 z-10">
+          <div className="absolute top-4 text-center bg-black/60 px-4 py-1.5 rounded-full text-xs font-medium tracking-wide border border-white/10 z-10 max-w-[85%]">
             Posisikan objek sampah di dalam kotak
           </div>
         </div>
