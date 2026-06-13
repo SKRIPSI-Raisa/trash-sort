@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { getHistory, getMetrics } from "@/lib/api"
+import { supabase } from "@/lib/supabase"
 import { ClassificationResult, ModelMetrics } from "@/lib/types"
 import { SectionCards } from "@/components/section-cards"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
@@ -17,10 +18,13 @@ export default function Page() {
   const [history, setHistory] = React.useState<ClassificationResult[]>([])
   const [metrics, setMetrics] = React.useState<ModelMetrics | null>(null)
   const [loading, setLoading] = React.useState(true)
+  const [isGuest, setIsGuest] = React.useState(false)
 
   React.useEffect(() => {
     async function loadData() {
       try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setIsGuest(!user)
         const histData = await getHistory()
         const metricsData = await getMetrics()
         setHistory(histData)
@@ -68,6 +72,29 @@ export default function Page() {
           Pantau ringkasan aktivitas klasifikasi dan efisiensi model klasifikasi WasteSort.
         </p>
       </div>
+
+      {isGuest && (
+        <div className="rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent border border-emerald-500/20 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
+          <div className="space-y-1">
+            <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+              <IconInfoCircle className="size-4 shrink-0" />
+              Mode Tamu Aktif (Penyimpanan Lokal)
+            </h4>
+            <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+              Riwayat klasifikasi sampah Anda saat ini hanya disimpan secara lokal di peramban ini. 
+              Masuk atau daftar akun untuk mencadangkan data Anda secara permanen di cloud dan mengakses fitur lanjutan.
+            </p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <Button asChild size="sm" className="rounded-xl font-semibold">
+              <Link href="/login">Masuk ke Akun</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="rounded-xl font-semibold">
+              <Link href="/register">Daftar Akun</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* R1 Section Cards */}
       <SectionCards total={total} organic={organic} nonOrganic={nonOrganic} accuracy={accuracy} />

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
@@ -16,28 +15,23 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean | null>(null)
+  const [isChecking, setIsChecking] = React.useState(true)
 
   React.useEffect(() => {
     async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        toast.error("Harap masuk terlebih dahulu.")
-        router.push("/login")
-      } else {
-        setIsAuthenticated(true)
-      }
+      // Just check the session, no force redirect if empty
+      await supabase.auth.getSession()
+      setIsChecking(false)
     }
     
     checkAuth()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT" || !session) {
-        setIsAuthenticated(false)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, _session) => {
+      // If user explicitly signs out, redirect to login
+      if (event === "SIGNED_OUT") {
         router.push("/login")
-      } else if (session) {
-        setIsAuthenticated(true)
       }
+      setIsChecking(false)
     })
 
     return () => {
@@ -45,7 +39,7 @@ export default function DashboardLayout({
     }
   }, [router])
 
-  if (isAuthenticated === null) {
+  if (isChecking) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
@@ -54,10 +48,6 @@ export default function DashboardLayout({
         </div>
       </div>
     )
-  }
-
-  if (isAuthenticated === false) {
-    return null
   }
 
   return (

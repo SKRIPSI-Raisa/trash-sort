@@ -24,6 +24,7 @@ import {
   IconInfoCircle,
   IconUser,
   IconLogout,
+  IconLogin,
 } from "@tabler/icons-react"
 
 const data = {
@@ -90,6 +91,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             role: "user"
           })
         }
+      } else {
+        setUserProfile({
+          name: "Pengguna Tamu",
+          role: "umum (lokal)",
+          avatarUrl: undefined
+        })
       }
     }
     
@@ -117,7 +124,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5! hover:bg-sidebar-accent"
             >
-              <Link href="/dashboard">
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <IconRecycle className="size-5" />
                 </div>
@@ -202,17 +209,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </span>
             </div>
           </div>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut()
-              toast.success("Anda telah keluar dari sistem.")
-              router.push("/login")
-            }}
-            className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all cursor-pointer shrink-0"
-            title="Keluar"
-          >
-            <IconLogout className="size-5" />
-          </button>
+          {userProfile?.role === "umum (lokal)" ? (
+            <button
+              onClick={() => router.push("/login")}
+              className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all cursor-pointer shrink-0"
+              title="Masuk"
+            >
+              <IconLogin className="size-5" />
+            </button>
+          ) : (
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut()
+                toast.success("Anda telah keluar dari sistem.")
+                router.push("/login")
+              }}
+              className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all cursor-pointer shrink-0"
+              title="Keluar"
+            >
+              <IconLogout className="size-5" />
+            </button>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

@@ -386,18 +386,10 @@ export default function LandingPage() {
               className="h-13 rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.03] transition-all duration-300"
               asChild
             >
-              <Link href="/register">
-                Mulai Klasifikasi Gratis
+              <Link href="/dashboard/classification">
+                Coba Sebagai Tamu
                 <IconArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="h-13 rounded-full px-8 text-base border-border/60 hover:bg-muted/50"
-              asChild
-            >
-              <Link href="/login">Sudah Punya Akun?</Link>
             </Button>
           </div>
 
@@ -810,18 +802,26 @@ export default function LandingPage() {
               className="h-13 w-full rounded-full px-10 text-base font-semibold shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.04] transition-all duration-300 sm:w-auto glow-emerald"
               asChild
             >
-              <Link href="/register">
-                Daftar Gratis Sekarang
+              <Link href="/dashboard/classification">
+                Coba Sebagai Tamu
                 <IconArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               size="lg"
-              className="h-13 rounded-full px-8 text-base hover:bg-muted/60"
+              className="h-13 rounded-full px-8 text-base border-border/60 hover:bg-muted/50"
               asChild
             >
-              <Link href="/login">Sudah punya akun? Masuk →</Link>
+              <Link href="/register">Daftar Akun</Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="h-13 rounded-full px-6 text-base hover:bg-muted/60"
+              asChild
+            >
+              <Link href="/login">Masuk</Link>
             </Button>
           </div>
         </div>

@@ -2,6 +2,26 @@ import { ClassificationResult, ModelMetrics } from "./types"
 import { mockMetrics, SVGS } from "./mock-data"
 import { supabase } from "./supabase"
 
+const PUBLIC_HISTORY_KEY = "wastesort_public_history"
+
+// Helper to retrieve public guest history from localStorage
+function getLocalHistory(): ClassificationResult[] {
+  if (typeof window === "undefined") return []
+  const data = localStorage.getItem(PUBLIC_HISTORY_KEY)
+  if (!data) return []
+  try {
+    return JSON.parse(data) as ClassificationResult[]
+  } catch {
+    return []
+  }
+}
+
+// Helper to save public guest history to localStorage
+function saveLocalHistory(history: ClassificationResult[]): void {
+  if (typeof window === "undefined") return
+  localStorage.setItem(PUBLIC_HISTORY_KEY, JSON.stringify(history))
+}
+
 // Deterministic mock neighbors generator for UI premium features
 function generateMockNeighbors(
   prediction: "Organik" | "Non-Organik",
@@ -88,10 +108,12 @@ function mapDbToClassificationResult(item: ScanHistoryRow): ClassificationResult
   }
 }
 
-// Read history from Supabase
+// Read history (Supabase for logged in user, localStorage for guest/public user)
 export async function getHistory(): Promise<ClassificationResult[]> {
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return []
+  if (!user) {
+    return getLocalHistory()
+  }
 
   const { data, error } = await supabase
     .from("scan_histories")
@@ -109,6 +131,12 @@ export async function getHistory(): Promise<ClassificationResult[]> {
 
 // Get single item by ID
 export async function getHistoryItemById(id: string): Promise<ClassificationResult | null> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    const local = getLocalHistory()
+    return local.find(item => item.id === id) || null
+  }
+
   const { data, error } = await supabase
     .from("scan_histories")
     .select("*")
@@ -123,14 +151,29 @@ export async function getHistoryItemById(id: string): Promise<ClassificationResu
   return mapDbToClassificationResult(data)
 }
 
-// Save to history (now handled directly in classifyImage, kept for type compatibility)
+// Save to history (primarily handled in classifyImage, fallback kept for compatibility)
 export async function saveToHistory(result: ClassificationResult): Promise<void> {
-  // No-op because it's handled at creation time.
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    const local = getLocalHistory()
+    if (!local.some(item => item.id === result.id)) {
+      saveLocalHistory([result, ...local])
+    }
+    return
+  }
   console.log("saveToHistory called for", result.id)
 }
 
 // Delete item
 export async function deleteHistoryItem(id: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    const local = getLocalHistory()
+    const updated = local.filter(item => item.id !== id)
+    saveLocalHistory(updated)
+    return
+  }
+
   const { error } = await supabase
     .from("scan_histories")
     .delete()
@@ -145,7 +188,10 @@ export async function deleteHistoryItem(id: string): Promise<void> {
 // Clear all history for current user
 export async function clearHistory(): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
+  if (!user) {
+    saveLocalHistory([])
+    return
+  }
 
   const { error } = await supabase
     .from("scan_histories")
@@ -164,34 +210,11 @@ export async function getMetrics(): Promise<ModelMetrics> {
   return mockMetrics
 }
 
-// Classification engine connected to Supabase Database and Storage
+// Classification engine connected to Supabase Database/Storage or local localStorage
 export async function classifyImage(file: File): Promise<ClassificationResult> {
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    throw new Error("Pengguna harus masuk terlebih dahulu.")
-  }
 
-  // 1. Upload image to Supabase Storage in 'scans' bucket
-  const fileExt = file.name.split('.').pop() || "jpg"
-  // Clean filename for safety in URL
-  const cleanFileName = file.name.replace(/[^a-zA-Z0-9]/g, "_")
-  const filePath = `${user.id}/${Date.now()}_${cleanFileName}.${fileExt}`
-
-  const { error: uploadError } = await supabase.storage
-    .from("scans")
-    .upload(filePath, file)
-
-  if (uploadError) {
-    console.error("Storage upload failed:", uploadError)
-    throw new Error("Gagal mengunggah citra ke storage: " + uploadError.message)
-  }
-
-  // 2. Get Public URL
-  const { data: { publicUrl } } = supabase.storage
-    .from("scans")
-    .getPublicUrl(filePath)
-
-  // 3. Classify local file (simulated algorithm based on filename keywords)
+  // Common simulated prediction parameters
   const nameLower = file.name.toLowerCase()
   const organicKeywords = ["daun", "apel", "pisang", "sayur", "nasi", "roti", "jeruk", "makanan", "buah", "tulang", "kulit", "organik", "daon", "sampah_kebun"]
   const nonOrganicKeywords = ["plastik", "botol", "kaleng", "kardus", "kertas", "kresek", "gelas", "snack", "chiki", "box", "besi", "logam", "kaca", "beling", "non"]
@@ -211,8 +234,62 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
 
   const confidence = parseFloat((0.70 + Math.random() * 0.28).toFixed(2)) // 70% to 98%
   const scanId = crypto.randomUUID()
+  const createdAt = new Date().toISOString()
 
-  // 4. Save scan metadata to public.scan_histories table
+  // GUEST MODE FALLBACK
+  if (!user) {
+    const originalImageUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.readAsDataURL(file)
+    })
+
+    const neighbors = generateMockNeighbors(prediction, confidence, scanId)
+
+    const newResult: ClassificationResult = {
+      id: scanId,
+      filename: file.name,
+      prediction,
+      confidence,
+      k_value: 7,
+      neighbors,
+      original_image_url: originalImageUrl,
+      preprocessing: {
+        resized_to: [128, 128],
+        normalized: true
+      },
+      features_used: ["Color Histogram", "LBP"],
+      execution_time_seconds: 0.38,
+      created_at: createdAt
+    }
+
+    const local = getLocalHistory()
+    saveLocalHistory([newResult, ...local])
+
+    return newResult
+  }
+
+  // SIGNED IN USER MODE
+  // 1. Upload image to Supabase Storage in 'scans' bucket
+  const fileExt = file.name.split('.').pop() || "jpg"
+  const cleanFileName = file.name.replace(/[^a-zA-Z0-9]/g, "_")
+  const filePath = `${user.id}/${Date.now()}_${cleanFileName}.${fileExt}`
+
+  const { error: uploadError } = await supabase.storage
+    .from("scans")
+    .upload(filePath, file)
+
+  if (uploadError) {
+    console.error("Storage upload failed:", uploadError)
+    throw new Error("Gagal mengunggah citra ke storage: " + uploadError.message)
+  }
+
+  // 2. Get Public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from("scans")
+    .getPublicUrl(filePath)
+
+  // 3. Save scan metadata to public.scan_histories table
   const { data: insertData, error: insertError } = await supabase
     .from("scan_histories")
     .insert({
@@ -221,14 +298,14 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
       confidence: confidence,
       image_url: publicUrl,
       category: prediction,
-      created_at: new Date().toISOString()
+      created_at: createdAt
     })
     .select()
     .single()
 
   if (insertError) {
     console.error("Database insert failed:", insertError)
-    // Cleanup uploaded file from storage on database insert failure
+    // Cleanup uploaded file on DB failure
     await supabase.storage.from("scans").remove([filePath])
     throw new Error("Gagal menyimpan riwayat klasifikasi ke database: " + insertError.message)
   }
