@@ -4,6 +4,13 @@ import { supabase } from "./supabase"
 
 const PUBLIC_HISTORY_KEY = "wastesort_public_history"
 
+// API configuration dynamically built from HF space name or custom URL env variables
+const HF_SPACE_NAME = process.env.NEXT_PUBLIC_HF_SPACE_NAME || ""
+const API_BASE_URL = HF_SPACE_NAME
+  ? `https://${HF_SPACE_NAME.replace(/\/$/, "")}.hf.space`
+  : (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "")
+
+
 // Helper to retrieve public guest history from localStorage
 function getLocalHistory(): ClassificationResult[] {
   if (typeof window === "undefined") return []
@@ -205,40 +212,49 @@ export async function clearHistory(): Promise<void> {
 }
 
 // Check connection status of FastAPI backend
+// Tries /api/info first (HF Space), then falls back to / (local API)
 export async function checkApiConnection(): Promise<{
   connected: boolean
   status?: string
   modelStatus?: string
   kValue?: number
 }> {
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 2500)
-    
-    const res = await fetch("http://127.0.0.1:8000/", {
-      signal: controller.signal
-    })
-    clearTimeout(timeoutId)
-    
-    if (!res.ok) {
-      return { connected: false }
+  const endpoints = [`${API_BASE_URL}/api/info`, `${API_BASE_URL}/`]
+
+  for (const url of endpoints) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 2500)
+
+      const res = await fetch(url, {
+        headers: { accept: "application/json" },
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+
+      if (!res.ok) continue
+
+      const data = await res.json()
+      return {
+        connected: true,
+        status: data.status,
+        modelStatus: data.model_status,
+        kValue: data.k_value,
+      }
+    } catch {
+      // try next endpoint
     }
-    const data = await res.json()
-    return {
-      connected: true,
-      status: data.status,
-      modelStatus: data.model_status,
-      kValue: data.k_value
-    }
-  } catch (error) {
-    return { connected: false }
   }
+
+  return { connected: false }
 }
 
 // Fetch model metrics from FastAPI backend with fallback to mock metrics
 export async function getMetrics(): Promise<ModelMetrics> {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/metrics")
+    const res = await fetch(`${API_BASE_URL}/api/metrics`, {
+      headers: { accept: "application/json" },
+    })
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`)
     }
@@ -258,8 +274,9 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
   try {
     const formData = new FormData()
     formData.append("file", file)
-    const response = await fetch("http://127.0.0.1:8000/api/classify", {
+    const response = await fetch(`${API_BASE_URL}/api/classify`, {
       method: "POST",
+      headers: { accept: "application/json" },
       body: formData,
     })
     if (!response.ok) {
