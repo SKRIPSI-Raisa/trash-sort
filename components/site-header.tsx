@@ -54,7 +54,7 @@ export function SiteHeader() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/dashboard" className="transition-colors hover:text-foreground">
-                WasteSort
+                TrashSort
               </BreadcrumbLink>
             </BreadcrumbItem>
             

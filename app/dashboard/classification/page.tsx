@@ -195,7 +195,7 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-extrabold tracking-tight">Klasifikasi Sampah</h1>
           <p className="text-muted-foreground text-sm">
-            Unggah foto sampah rumah tangga untuk klasifikasi otomatis Organik atau Non-Organik.
+            Unggah atau ambil foto untuk klasifikasi sampah secara otomatis.
           </p>
         </div>
 
@@ -252,22 +252,29 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
                     <IconInfoCircle className="size-5 shrink-0 mt-0.5" />
                     <div>
                       <strong className="font-semibold block mb-0.5">API Backend Offline</strong>
-                      Klasifikasi memerlukan FastAPI backend aktif. Silakan jalankan API KNN dengan perintah <code>python app.py</code> di folder KNN.
+                      Klasifikasi memerlukan FastAPI backend aktif. Silakan jalankan API KNN dengan perintah <code>python app.py</code> di folder model.
                     </div>
                   </div>
                 )}
                 
                 <Tabs defaultValue="upload-file" className="w-full">
-                  <TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-4 bg-muted/65 p-1 rounded-xl">
-                    <TabsTrigger value="upload-file" className="rounded-lg py-2 font-semibold text-xs sm:text-sm cursor-pointer">
-                      <IconUpload className="size-4 mr-2" />
-                      Unggah File
-                    </TabsTrigger>
-                    <TabsTrigger value="camera" className="rounded-lg py-2 font-semibold text-xs sm:text-sm cursor-pointer">
-                      <IconCamera className="size-4 mr-2" />
-                      Ambil Foto
-                    </TabsTrigger>
-                  </TabsList>
+<TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-4 bg-muted/65 p-1 rounded-xl">
+  <TabsTrigger
+    value="upload-file"
+    className="rounded-lg font-semibold text-xs sm:text-sm cursor-pointer"
+  >
+    <IconUpload className="size-4 mr-2" />
+    Unggah File
+  </TabsTrigger>
+
+  <TabsTrigger
+    value="camera"
+    className="rounded-lg font-semibold text-xs sm:text-sm cursor-pointer"
+  >
+    <IconCamera className="size-4 mr-2" />
+    Ambil Foto
+  </TabsTrigger>
+</TabsList>
                   
                   <TabsContent value="upload-file" className="mt-0 focus-visible:ring-0 focus-visible:outline-none">
                     <div
@@ -358,7 +365,7 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
               </CardHeader>
               <CardContent className="pt-4 space-y-4 text-sm text-muted-foreground">
                 <p>
-                  Untuk mendapatkan hasil klasifikasi K-Nearest Neighbors (KNN) yang akurat, ikuti tips foto berikut:
+                  Untuk mendapatkan hasil klasifikasi yang akurat, ikuti tips foto berikut:
                 </p>
                 
                 <ul className="space-y-3 pl-1">

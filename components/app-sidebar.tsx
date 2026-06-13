@@ -56,11 +56,7 @@ const data = {
       url: "/dashboard/guide",
       icon: IconLeaf,
     },
-    {
-      title: "Tentang Sistem",
-      url: "/dashboard/about",
-      icon: IconInfoCircle,
-    },
+
   ],
 }
 
@@ -93,7 +89,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         }
       } else {
         setUserProfile({
-          name: "Pengguna Tamu",
+          name: "Pengunjung",
           role: "umum (lokal)",
           avatarUrl: undefined
         })
@@ -129,8 +125,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <IconRecycle className="size-5" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold text-base">WasteSort</span>
-                  <span className="text-xs text-muted-foreground">KNN Classifier</span>
+                  <span className="font-semibold text-base">Trash Sort</span>
+                  <span className="text-xs text-muted-foreground"></span>
                 </div>
               </Link>
             </SidebarMenuButton>

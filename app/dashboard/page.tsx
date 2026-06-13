@@ -69,7 +69,7 @@ export default function Page() {
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-extrabold tracking-tight">Ringkasan Sistem</h1>
         <p className="text-muted-foreground text-sm">
-          Pantau ringkasan aktivitas klasifikasi dan efisiensi model klasifikasi WasteSort.
+          Pantau ringkasan aktivitas klasifikasi dan efisiensi model klasifikasi TrashSort.
         </p>
       </div>
 
@@ -81,7 +81,7 @@ export default function Page() {
               Mode Tamu Aktif (Penyimpanan Lokal)
             </h4>
             <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-              Riwayat klasifikasi sampah Anda saat ini hanya disimpan secara lokal di peramban ini. 
+              Riwayat klasifikasi sampah Anda saat ini hanya disimpan secara lokal di peramban ini.
               Masuk atau daftar akun untuk mencadangkan data Anda secara permanen di cloud dan mengakses fitur lanjutan.
             </p>
           </div>
@@ -116,7 +116,7 @@ export default function Page() {
               </div>
               <CardTitle className="text-lg font-bold">Mulai Klasifikasi Baru</CardTitle>
               <CardDescription>
-                Unggah foto sampah rumah tangga Anda dan biarkan model KNN kami memilahnya secara instan.
+                Unggah atau ambil foto sampah untuk mengetahui kategorinya secara cepat
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -130,21 +130,22 @@ export default function Page() {
           </Card>
 
           {/* Fact Card */}
-          <Card className="h-full flex flex-col justify-between">
-            <CardHeader className="pb-2">
+          <Card className="h-full flex flex-col">
+            <CardHeader className="pb-0 gap-1-1">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-xs uppercase tracking-wider">
                 <IconInfoCircle className="size-4" />
-                Edukasi Sampah
+                Pentingnya Pemilahan
               </div>
-              <CardTitle className="text-base font-bold mt-1">Mengapa Memilah Sampah?</CardTitle>
+
+              <CardTitle className="mt-1 text-base font-bold">
+                Mengapa Sampah Perlu Dipilah?
+              </CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-2">
-              <p>
-                Memilah sampah organik dan non-organik di rumah dapat meningkatkan tingkat keberhasilan daur ulang hingga <strong>80%</strong>.
-              </p>
-              <p>
-                Sampah organik yang tercampur sampah plastik akan membusuk dalam keadaan anaerobik di TPA, melepaskan gas metana yang berbahaya bagi iklim.
-              </p>
+
+            <CardContent className="pt-0 text-sm text-muted-foreground">
+
+                Memilah sampah organik dan non-organikdapat meningkatkan keberhasilan daur ulang hingga <strong>80%</strong> sekaligus mengurangi jumlah sampah yang berakhir di tempat pembuangan akhir (TPA).
+
             </CardContent>
           </Card>
         </div>
