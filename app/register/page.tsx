@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -50,10 +51,31 @@ export default function RegisterPage() {
       return
     }
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1200))
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name
+        }
+      }
+    })
+
+    if (error) {
+      toast.error("Pendaftaran Gagal: " + error.message)
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(false)
-    toast.success("Registrasi Berhasil!")
-    router.push("/dashboard")
+    if (data.session) {
+      toast.success("Registrasi Berhasil!")
+      router.push("/dashboard")
+    } else {
+      toast.success("Registrasi Berhasil! Silakan masuk.")
+      router.push("/login")
+    }
   }
 
   return (

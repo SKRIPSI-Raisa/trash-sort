@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
 
 import {
   Sidebar,
@@ -65,6 +66,47 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const router = useRouter()
+  const [userProfile, setUserProfile] = React.useState<{ name: string; role: string; avatarUrl?: string } | null>(null)
+
+  React.useEffect(() => {
+    async function fetchProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("name, role, avatar_url")
+          .eq("id", user.id)
+          .single()
+        
+        if (profile) {
+          setUserProfile({
+            name: profile.name || "User",
+            role: profile.role || "user",
+            avatarUrl: profile.avatar_url || undefined
+          })
+        } else {
+          setUserProfile({
+            name: user.email?.split("@")[0] || "User",
+            role: "user"
+          })
+        }
+      }
+    }
+    
+    fetchProfile()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        fetchProfile()
+      } else {
+        setUserProfile(null)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -140,16 +182,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="border-t border-sidebar-border/50 p-4">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground border shrink-0">
-              <IconUser className="size-5" />
-            </div>
+            {userProfile?.avatarUrl ? (
+              <img
+                src={userProfile.avatarUrl}
+                alt={userProfile.name}
+                className="size-9 rounded-full object-cover border shrink-0"
+              />
+            ) : (
+              <div className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground border shrink-0">
+                <IconUser className="size-5" />
+              </div>
+            )}
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold truncate">Demo User</span>
-              <span className="text-xs text-muted-foreground truncate">Peneliti / Umum</span>
+              <span className="text-sm font-semibold truncate" title={userProfile?.name || "Memuat..."}>
+                {userProfile?.name || "Memuat..."}
+              </span>
+              <span className="text-xs text-muted-foreground truncate capitalize">
+                {userProfile?.role === "admin" ? "Administrator" : "Umum"}
+              </span>
             </div>
           </div>
           <button
-            onClick={() => {
+            onClick={async () => {
+              await supabase.auth.signOut()
               toast.success("Anda telah keluar dari sistem.")
               router.push("/login")
             }}

@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -48,7 +49,18 @@ export default function LoginPage() {
       return
     }
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    if (error) {
+      toast.error("Login Gagal: " + error.message)
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(false)
     toast.success("Login Berhasil!")
     router.push("/dashboard")
