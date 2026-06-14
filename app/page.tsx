@@ -252,7 +252,7 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="h-screen bg-background text-foreground overflow-hidden">
       {/* ── Navbar ── */}
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/75 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -338,7 +338,7 @@ export default function LandingPage() {
           <Meteors number={14} />
         </div>
 
-        <div className="relative mx-auto max-w-6xl px-4 py-32 text-center sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-6xl px-4 py-8 text-center sm:px-6 lg:px-8">
           {/* Top badge */}
           <div className="mb-8 flex justify-center animate-fade-up">
             <AnimatedBadge>
@@ -365,7 +365,7 @@ export default function LandingPage() {
           </p>
 
           {/* CTA row */}
-          <div className="mb-20 flex flex-col items-center justify-center gap-4 sm:flex-row animate-fade-up [animation-delay:240ms]">
+          <div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row animate-fade-up [animation-delay:240ms]">
             <Button
               size="lg"
               className="h-13 rounded-full px-8 text-base font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.03] transition-all duration-300"
@@ -384,7 +384,7 @@ export default function LandingPage() {
         {/* Bottom gradient fade */}
         <div
           aria-hidden
-          className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"
+          className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none"
         />
       </section>
 

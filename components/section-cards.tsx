@@ -101,7 +101,7 @@ export function SectionCards({ total, organic, nonOrganic, accuracy }: SectionCa
       {/* Akurasi Model */}
       <Card className="@container/card aspect-square md:aspect-auto flex flex-col justify-between [--card-spacing:0.75rem] md:[--card-spacing:1.125rem]">
         <CardHeader>
-          <CardDescription className="font-medium text-[10px] md:text-xs truncate">Akurasi Model KNN</CardDescription>
+          <CardDescription className="font-medium text-[10px] md:text-xs truncate">Akurasi Model</CardDescription>
           <CardTitle className="text-xl font-bold tabular-nums md:text-2xl lg:text-3xl">
             {(accuracy * 100).toFixed(1)}%
           </CardTitle>
@@ -113,7 +113,7 @@ export function SectionCards({ total, organic, nonOrganic, accuracy }: SectionCa
         </CardHeader>
         <CardFooter className="flex-col items-start gap-0.5 text-xs md:text-sm">
           <div className="flex items-center gap-1 font-medium text-amber-600 dark:text-amber-400 text-[10px] md:text-xs">
-            Status: K=7 Optimal
+            Status: K=11 
           </div>
           <div className="text-muted-foreground text-[9px] md:text-xs hidden sm:block">Akurasi pada dataset uji</div>
         </CardFooter>
