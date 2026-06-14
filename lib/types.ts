@@ -37,8 +37,8 @@ export interface KOptimizationPoint {
   accuracy: number
 }
 
-export interface FeatureComparisonPoint {
-  method: string
+export interface DistanceComparisonPoint {
+  metric: string
   accuracy: number
 }
 
@@ -60,7 +60,7 @@ export interface ModelMetrics {
   k_optimal: number
   confusion_matrix: ConfusionMatrix
   k_curve: KOptimizationPoint[]
-  feature_comparison: FeatureComparisonPoint[]
+  distance_comparison: DistanceComparisonPoint[]
   model_info: ModelInfo
 }
 

@@ -27,10 +27,10 @@ const kCurveConfig = {
   },
 } satisfies ChartConfig
 
-const featureConfig = {
-  accuracy: {
-    label: "Akurasi",
-    color: "#6366f1", // Indigo
+const metricsConfig = {
+  value: {
+    label: "Nilai",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig
 
@@ -68,7 +68,7 @@ export default function Page() {
     )
   }
 
-  const { accuracy, precision, recall, f1_score, confusion_matrix, k_curve, feature_comparison, model_info } = metrics
+  const { accuracy, precision, recall, f1_score, confusion_matrix, k_curve, distance_comparison, model_info } = metrics
 
   return (
     <div className="space-y-6 px-4 lg:px-6">
@@ -119,7 +119,7 @@ export default function Page() {
         </div>
 
         {/* Model Info Card */}
-        <Card className="flex flex-col justify-between">
+        <Card className="flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-lg font-bold">Spesifikasi Model KNN</CardTitle>
             <CardDescription>
@@ -185,7 +185,7 @@ export default function Page() {
           <CardHeader>
             <CardTitle className="text-base font-bold">Kurva Optimasi Nilai K (K-Optimization)</CardTitle>
             <CardDescription>
-              Menunjukkan perbandingan akurasi validasi terhadap nilai K. Akurasi puncak tercapai pada <strong>K=7 ({accuracy * 100}%)</strong>.
+              Menunjukkan perbandingan akurasi validasi terhadap nilai K. Akurasi puncak tercapai pada <strong>K=11 ({accuracy * 100}%)</strong>.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
@@ -222,21 +222,21 @@ export default function Page() {
           </CardContent>
         </Card>
 
-        {/* Feature Comparison Chart */}
+        {/* Distance Metrics Comparison Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-bold">Perbandingan Akurasi Metode Ekstraksi Fitur</CardTitle>
+            <CardTitle className="text-base font-bold">Perbandingan Akurasi Metrik Jarak</CardTitle>
             <CardDescription>
-              Akurasi klasifikasi berdasarkan fitur visual yang diekstrak. Kombinasi <strong>Color Histogram & LBP</strong> memberikan hasil terbaik.
+              Akurasi model KNN berdasarkan 4 metrik jarak yang diuji. <strong>Euclidean</strong> menghasilkan akurasi tertinggi pada K=11.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
-            <ChartContainer config={featureConfig} className="aspect-auto h-[260px] w-full">
-              <BarChart data={feature_comparison} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ChartContainer config={metricsConfig} className="aspect-auto h-[260px] w-full">
+              <BarChart data={distance_comparison} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="method" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(val) => val.split(" ")[0]} />
+                <XAxis dataKey="metric" tickLine={false} axisLine={false} tickMargin={8} />
                 <YAxis
-                  domain={[0.7, 1.0]}
+                  domain={[0.8, 1.0]}
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
@@ -246,15 +246,16 @@ export default function Page() {
                   cursor={false}
                   content={
                     <ChartTooltipContent
+                      formatter={(val) => `${(Number(val) * 100).toFixed(2)}%`}
                       indicator="dot"
                     />
                   }
                 />
-                <Bar dataKey="accuracy" fill="var(--color-accuracy)" radius={[6, 6, 0, 0]}>
-                  {feature_comparison.map((entry, index) => (
+                <Bar dataKey="accuracy" radius={[6, 6, 0, 0]}>
+                  {distance_comparison.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={entry.method.includes("Combined") ? "var(--primary)" : "#818cf8"}
+                      fill={index === 0 ? "var(--primary)" : ["#10b981", "#6366f1", "#f59e0b"][index - 1]}
                     />
                   ))}
                 </Bar>

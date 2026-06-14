@@ -67,8 +67,8 @@ export function ChartAreaInteractive({ history }: ChartProps) {
     if (timeRange === "30d") days = 30
     if (timeRange === "90d") days = 90
 
-    // Set today as reference (June 12, 2026 based on metadata)
-    const referenceDate = new Date("2026-06-12")
+    // Set today as reference dynamically
+    const referenceDate = new Date()
     
     // Initialize dates with 0 values
     for (let i = days - 1; i >= 0; i--) {

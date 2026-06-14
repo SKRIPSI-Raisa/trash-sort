@@ -354,11 +354,11 @@ export const mockMetrics: ModelMetrics = {
     { k: 17, accuracy: 0.862 },
     { k: 19, accuracy: 0.859 }
   ],
-  feature_comparison: [
-    { method: "Color Histogram", accuracy: 0.795 },
-    { method: "Local Binary Patterns (LBP)", accuracy: 0.812 },
-    { method: "Histogram of Oriented Gradients (HOG)", accuracy: 0.834 },
-    { method: "Histogram + LBP (Combined)", accuracy: 0.895 }
+  distance_comparison: [
+    { metric: "Euclidean", accuracy: 0.895 },
+    { metric: "Manhattan", accuracy: 0.881 },
+    { metric: "Minkowski (p=3)", accuracy: 0.874 },
+    { metric: "Chebyshev", accuracy: 0.862 }
   ],
   model_info: {
     algorithm: "K-Nearest Neighbors (KNN)",

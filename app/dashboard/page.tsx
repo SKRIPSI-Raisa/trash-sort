@@ -78,20 +78,20 @@ export default function Page() {
           <div className="space-y-1">
             <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
               <IconInfoCircle className="size-4 shrink-0" />
-              Mode Tamu Aktif (Penyimpanan Lokal)
+              Mode Pengunjung Aktif (Penyimpanan Lokal)
             </h4>
             <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
               Riwayat klasifikasi sampah Anda saat ini hanya disimpan secara lokal di peramban ini.
-              Masuk atau daftar akun untuk mencadangkan data Anda secara permanen di cloud dan mengakses fitur lanjutan.
+              Masuk untuk mencadangkan data Anda secara permanen di cloud dan mengakses fitur lanjutan.
             </p>
           </div>
           <div className="flex gap-2 shrink-0">
             <Button asChild size="sm" className="rounded-xl font-semibold">
               <Link href="/login">Masuk ke Akun</Link>
             </Button>
-            <Button asChild size="sm" variant="outline" className="rounded-xl font-semibold">
+            {/*/Button asChild size="sm" variant="outline" className="rounded-xl font-semibold">
               <Link href="/register">Daftar Akun</Link>
-            </Button>
+            </Button>/*/}
           </div>
         </div>
       )}

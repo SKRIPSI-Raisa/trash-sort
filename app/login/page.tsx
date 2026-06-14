@@ -24,16 +24,16 @@ import {
 } from "@tabler/icons-react"
 
 const LEFT_FEATURES = [
-  { icon: IconCamera, text: "Upload foto & klasifikasi instan" },
-  { icon: IconBrain, text: "Algoritma KNN akurasi >95%" },
-  { icon: IconChartBar, text: "Analitik & metrik performa model" },
+  { icon: IconCamera, text: "Monitoring Hasil Klasifikasi" },
+  { icon: IconBrain, text: "Evaluasi Performa Model" },
+  { icon: IconChartBar, text: "Kelola Riwayat Klasifikasi" },
 ]
 
-const STATS = [
-  { value: "95%", label: "Akurasi" },
-  { value: "K=7", label: "Optimal" },
+/*const STATS = [
+  { value: "83%", label: "Akurasi" },
+  { value: "K=11", label: "Optimal" },
   { value: "2", label: "Kategori" },
-]
+]*/
 
 export default function LoginPage() {
   const router = useRouter()
@@ -95,7 +95,7 @@ export default function LoginPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/40">
               <IconRecycle className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg text-white/90">TrashSort AI</span>
+            <span className="font-bold text-lg text-white/90">TrashSort</span>
           </Link>
 
           {/* Hero copy */}
@@ -105,17 +105,15 @@ export default function LoginPage() {
             </span>
 
             <h2 className="mb-4 text-4xl font-bold leading-tight text-white">
-              Lanjutkan{" "}
+           {" "}
               <span className="animate-shimmer-text bg-gradient-to-r from-emerald-300 via-green-200 to-teal-300 bg-clip-text text-transparent">
-                Klasifikasi
+                Klasifikasi Sampah
               </span>
               <br />
-              Sampah Anda
             </h2>
 
             <p className="mb-10 max-w-sm text-sm leading-relaxed text-white/50">
-              Pantau riwayat klasifikasi, analitik model, dan panduan pengelolaan
-              sampah kapan saja.
+              Pantau riwayat klasifikasi,performa model, dan tinjau aktivitas sistem
             </p>
 
             {/* Feature chips */}
@@ -137,12 +135,12 @@ export default function LoginPage() {
 
           {/* Bottom stats row */}
           <div className="flex items-center gap-8 border-t border-white/10 pt-6">
-            {STATS.map((s) => (
+            {/* {STATS.map((s) => (
               <div key={s.label}>
                 <p className="text-xl font-bold text-white/90">{s.value}</p>
                 <p className="text-xs text-white/40">{s.label}</p>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
@@ -154,20 +152,19 @@ export default function LoginPage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary">
             <IconRecycle className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-bold text-lg">TrashSort AI</span>
+          <span className="font-bold text-lg">TrashSort</span>
         </div>
 
         <div className="w-full max-w-sm">
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="mb-1.5 text-2xl font-bold tracking-tight">Masuk ke Akun</h1>
+            <h1 className="mb-1.5 text-2xl font-bold tracking-tight">Masuk ke Halaman Admin</h1>
             <p className="text-sm text-muted-foreground">
               Belum punya akun?{" "}
               <Link
                 href="/register"
                 className="font-semibold text-primary hover:underline"
               >
-                Daftar gratis
               </Link>
             </p>
           </div>

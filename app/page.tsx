@@ -278,7 +278,7 @@ export default function LandingPage() {
                 className="rounded-full px-5 shadow-md shadow-primary/20 hover:shadow-primary/35 transition-shadow"
                 asChild
               >
-                <Link href="/register">Daftar Gratis</Link>
+                {/*<Link href="/register">Daftar Gratis</Link>*/}
               </Button>
             </div>
 
@@ -378,20 +378,7 @@ export default function LandingPage() {
             </Button>
           </div>
 
-          {/* Stats cards */}
-          <div className="mx-auto grid max-w-2xl grid-cols-2 gap-3 md:grid-cols-4 animate-fade-up [animation-delay:320ms]">
-            {TECH_STATS.map((stat) => (
-              <div
-                key={stat.label}
-                className="flex flex-col items-center rounded-2xl border border-border/60 bg-card/60 px-4 py-5 backdrop-blur-sm hover:bg-card/80 hover:border-primary/30 transition-all duration-300"
-              >
-                <span className="text-3xl font-bold text-primary">
-                  <NumberTicker value={stat.value} suffix={stat.suffix} />
-                </span>
-                <span className="mt-1 text-xs text-muted-foreground">{stat.label}</span>
-              </div>
-            ))}
-          </div>
+
         </div>
 
         {/* Bottom gradient fade */}

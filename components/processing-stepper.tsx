@@ -14,9 +14,10 @@ interface ProcessingStepperProps {
 const steps: Step[] = [
   { label: "Citra Diterima", description: "Format RGB tervalidasi" },
   { label: "Preprocessing", description: "Resize ke 128x128 & normalisasi" },
-  { label: "Ekstraksi Fitur", description: "Ekstraksi Color Histogram & LBP" },
-  { label: "Mesin KNN", description: "Kalkulasi jarak tetangga terdekat" },
-  { label: "Hasil Keputusan", description: "Penetapan kategori akhir" },
+  { label: "Ekstraksi Fitur RGB & GLCM", description: "Ekstraksi fitur visual" },
+  { label: "Normalisasi Fitur", description: "Normalisasi fitur" },
+  { label: "Klasifikasi menggunakan KNN", description: "Klasifikasi tetangga terdekat" },
+  { label: "Hasil Klasifikasi", description: "Penetapan kategori akhir" },
 ]
 
 export function ProcessingStepper({ currentStep }: ProcessingStepperProps) {

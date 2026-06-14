@@ -405,7 +405,7 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
           <CardHeader className="text-center pb-8">
             <CardTitle className="text-xl font-bold">Memproses Citra Sampah</CardTitle>
             <CardDescription>
-              Ekstraksi fitur visual dan penghitungan jarak Euclidean model KNN sedang berjalan...
+              Ekstraksi fitur dan penghitungan jarak model KNN sedang berjalan...
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
@@ -470,19 +470,19 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
                 <CardContent className="py-4 space-y-2 text-xs text-muted-foreground">
                   <div className="flex justify-between">
                     <span>Model Algoritma:</span>
-                    <span className="font-semibold text-foreground">KNN (K-Nearest Neighbors)</span>
+                    <span className="font-semibold text-foreground">K-Nearest Neighbors</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Akurasi Model Uji:</span>
-                    <span className="font-semibold text-foreground">89.5%</span>
+                    <span className="font-semibold text-foreground">83.6%</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Fitur Visual:</span>
-                    <span className="font-semibold text-foreground">Histogram + LBP</span>
+                    <span className="font-semibold text-foreground">RGB + GLCM</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Pra-pemrosesan:</span>
-                    <span className="font-semibold text-foreground">Resize 128x128 RGB</span>
+                    <span className="font-semibold text-foreground">Resize 128x128</span>
                   </div>
                 </CardContent>
               </Card>
@@ -490,9 +490,7 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
 
             {/* Right Column: KNN Neighbors & Guide */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Neighbors */}
-              <NeighborViewer neighbors={result.neighbors} />
-              
+
               {/* Guide card */}
               <WasteGuideCard prediction={result.prediction} />
             </div>

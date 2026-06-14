@@ -241,10 +241,8 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
           </Card>
         </div>
 
-        {/* Right Column: Neighbors & Recommendations */}
+        {/* Right Column: Recommendations */}
         <div className="lg:col-span-2 space-y-6">
-          <NeighborViewer neighbors={result.neighbors} />
-          
           <WasteGuideCard prediction={result.prediction} />
         </div>
       </div>

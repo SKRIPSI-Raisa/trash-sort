@@ -1,5 +1,5 @@
 import { ClassificationResult, ModelMetrics } from "./types"
-import { mockMetrics, SVGS } from "./mock-data"
+import { mockMetrics, SVGS, mockHistory } from "./mock-data"
 import { supabase } from "./supabase"
 
 const PUBLIC_HISTORY_KEY = "wastesort_public_history"
@@ -11,15 +11,15 @@ const API_BASE_URL = HF_SPACE_NAME
   : (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "")
 
 
-// Helper to retrieve public guest history from localStorage
 function getLocalHistory(): ClassificationResult[] {
-  if (typeof window === "undefined") return []
+  if (typeof window === "undefined") return mockHistory
   const data = localStorage.getItem(PUBLIC_HISTORY_KEY)
-  if (!data) return []
+  if (!data) return mockHistory
   try {
-    return JSON.parse(data) as ClassificationResult[]
+    const parsed = JSON.parse(data) as ClassificationResult[]
+    return parsed.length > 0 ? parsed : mockHistory
   } catch {
-    return []
+    return mockHistory
   }
 }
 
@@ -258,7 +258,12 @@ export async function getMetrics(): Promise<ModelMetrics> {
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`)
     }
-    return await res.json() as ModelMetrics
+    const data = await res.json() as any
+    // Fallback if backend API is not yet updated to return distance_comparison
+    if (!data.distance_comparison) {
+      data.distance_comparison = mockMetrics.distance_comparison
+    }
+    return data as ModelMetrics
   } catch (error) {
     console.error("Failed to fetch metrics from FastAPI, falling back to mock data:", error)
     return mockMetrics
