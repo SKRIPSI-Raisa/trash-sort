@@ -271,14 +271,14 @@ export default function LandingPage() {
             {/* Auth buttons */}
             <div className="hidden items-center gap-3 md:flex">
               <Button variant="ghost" size="sm" className="rounded-full" asChild>
-                <Link href="/login">Masuk</Link>
+                <Link href="/login">Login Admin</Link>
               </Button>
               <Button
                 size="sm"
                 className="rounded-full px-5 shadow-md shadow-primary/20 hover:shadow-primary/35 transition-shadow"
                 asChild
               >
-                {/*<Link href="/register">Daftar Gratis</Link>*/}
+                {/* {<Link href="/register">Register</Link>} */}
               </Button>
             </div>
 
@@ -315,7 +315,7 @@ export default function LandingPage() {
                   <Link href="/login">Masuk</Link>
                 </Button>
                 <Button size="sm" className="flex-1 rounded-full" asChild>
-                  <Link href="/register">Daftar</Link>
+                  {/*<Link href="/register">Daftar</Link>*/}
                 </Button>
               </div>
             </div>
