@@ -29,7 +29,7 @@ export function SectionCards({ total, organic, nonOrganic, accuracy }: SectionCa
   const nonOrganicPercent = total > 0 ? Math.round((nonOrganic / total) * 100) : 0
 
   return (
-    <div className="grid grid-cols-2 gap-3 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:gap-4 md:grid-cols-2 lg:grid-cols-4 lg:px-6 dark:*:data-[slot=card]:bg-card">
+    <div className="grid grid-cols-1 gap-3 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs md:gap-4 md:grid-cols-3 lg:grid-cols-3 lg:px-6 dark:*:data-[slot=card]:bg-card">
       {/* Total Klasifikasi */}
       <Card className="@container/card aspect-square md:aspect-auto flex flex-col justify-between [--card-spacing:0.75rem] md:[--card-spacing:1.125rem]">
         <CardHeader>
@@ -95,27 +95,6 @@ export function SectionCards({ total, organic, nonOrganic, accuracy }: SectionCa
             </Badge>
           </div>
           <div className="text-muted-foreground text-[9px] md:text-xs hidden sm:block">Siap dipilah untuk daur ulang</div>
-        </CardFooter>
-      </Card>
-
-      {/* Akurasi Model */}
-      <Card className="@container/card aspect-square md:aspect-auto flex flex-col justify-between [--card-spacing:0.75rem] md:[--card-spacing:1.125rem]">
-        <CardHeader>
-          <CardDescription className="font-medium text-[10px] md:text-xs truncate">Akurasi Model</CardDescription>
-          <CardTitle className="text-xl font-bold tabular-nums md:text-2xl lg:text-3xl">
-            {(accuracy * 100).toFixed(1)}%
-          </CardTitle>
-          <CardAction>
-            <div className="p-1.5 md:p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg">
-              <IconCpu className="size-4 md:size-5" />
-            </div>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-0.5 text-xs md:text-sm">
-          <div className="flex items-center gap-1 font-medium text-amber-600 dark:text-amber-400 text-[10px] md:text-xs">
-            Status: K=11 
-          </div>
-          <div className="text-muted-foreground text-[9px] md:text-xs hidden sm:block">Akurasi pada dataset uji</div>
         </CardFooter>
       </Card>
     </div>

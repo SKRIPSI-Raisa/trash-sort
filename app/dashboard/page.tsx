@@ -23,8 +23,6 @@ export default function Page() {
   React.useEffect(() => {
     async function loadData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
-        setIsGuest(!user)
         const histData = await getHistory()
         const metricsData = await getMetrics()
         setHistory(histData)
@@ -72,29 +70,6 @@ export default function Page() {
           Pantau ringkasan aktivitas klasifikasi dan efisiensi model klasifikasi TrashSort.
         </p>
       </div>
-
-      {isGuest && (
-        <div className="rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent border border-emerald-500/20 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-          <div className="space-y-1">
-            <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-              <IconInfoCircle className="size-4 shrink-0" />
-              Mode Pengunjung Aktif (Penyimpanan Lokal)
-            </h4>
-            <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-              Riwayat klasifikasi sampah Anda saat ini hanya disimpan secara lokal di peramban ini.
-              Masuk untuk mencadangkan data Anda secara permanen di cloud dan mengakses fitur lanjutan.
-            </p>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <Button asChild size="sm" className="rounded-xl font-semibold">
-              <Link href="/login">Masuk ke Akun</Link>
-            </Button>
-            {/*/Button asChild size="sm" variant="outline" className="rounded-xl font-semibold">
-              <Link href="/register">Daftar Akun</Link>
-            </Button>/*/}
-          </div>
-        </div>
-      )}
 
       {/* R1 Section Cards */}
       <SectionCards total={total} organic={organic} nonOrganic={nonOrganic} accuracy={accuracy} />

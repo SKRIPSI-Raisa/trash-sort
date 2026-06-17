@@ -9,7 +9,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { FloatingBottomBar } from "@/components/floating-bottom-bar"
 import { IconLoader2 } from "@tabler/icons-react"
 
-export default function DashboardLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
@@ -20,25 +20,36 @@ export default function DashboardLayout({
   React.useEffect(() => {
     async function checkAuth() {
       const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        router.push("/login")
+        return
+      }
       
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", session.user.id)
-          .single()
-          
-        if (profile?.role === "admin") {
-          // STRICT SEPARATION: Admin cannot access user dashboard
-          router.push("/admin/dashboard")
-          return
-        }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single()
+        
+      if (profile?.role !== "admin") {
+        router.push("/dashboard")
+        return
       }
 
       setIsChecking(false)
     }
     
     checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        router.push("/login")
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [router])
 
   if (isChecking) {
@@ -46,7 +57,7 @@ export default function DashboardLayout({
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <IconLoader2 className="w-10 h-10 animate-spin text-primary" />
-          <span className="text-sm text-muted-foreground font-medium">Memverifikasi sesi...</span>
+          <span className="text-sm text-muted-foreground font-medium">Memverifikasi akses admin...</span>
         </div>
       </div>
     )

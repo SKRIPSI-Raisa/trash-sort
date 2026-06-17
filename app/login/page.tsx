@@ -61,9 +61,26 @@ export default function LoginPage() {
       return
     }
 
-    setIsLoading(false)
-    toast.success("Login Berhasil!")
-    router.push("/dashboard")
+    // Check role
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single()
+      
+      setIsLoading(false)
+      toast.success("Login Berhasil!")
+
+      if (profile?.role === "admin") {
+        router.push("/admin/dashboard")
+      } else {
+        router.push("/dashboard")
+      }
+    } else {
+      setIsLoading(false)
+      router.push("/dashboard")
+    }
   }
 
   return (

@@ -28,7 +28,7 @@ import {
 } from "@tabler/icons-react"
 
 const data = {
-  navMain: [
+  navUser: [
     {
       title: "Dashboard",
       url: "/dashboard",
@@ -40,14 +40,26 @@ const data = {
       icon: IconRecycle,
     },
     {
-      title: "Performa Model",
-      url: "/dashboard/performance",
-      icon: IconChartBar,
-    },
-    {
       title: "Riwayat Klasifikasi",
       url: "/dashboard/history",
       icon: IconHistory,
+    },
+  ],
+  navAdmin: [
+    {
+      title: "Admin Dashboard",
+      url: "/admin/dashboard",
+      icon: IconLayoutDashboard,
+    },
+    {
+      title: "Riwayat Semua User",
+      url: "/admin/history",
+      icon: IconHistory,
+    },
+    {
+      title: "Performa Model",
+      url: "/admin/performance",
+      icon: IconChartBar,
     },
   ],
   navSecondary: [
@@ -56,7 +68,6 @@ const data = {
       url: "/dashboard/guide",
       icon: IconLeaf,
     },
-
   ],
 }
 
@@ -137,8 +148,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className="flex flex-col justify-between py-4">
         {/* Main Navigation */}
         <SidebarMenu className="px-2 space-y-1">
-          {data.navMain.map((item) => {
-            const isActive = pathname === item.url || (item.url !== "/dashboard" && pathname.startsWith(item.url))
+          {(pathname.startsWith("/admin") ? data.navAdmin : data.navUser).map((item) => {
+            const isActive = pathname === item.url || (item.url !== "/dashboard" && item.url !== "/admin/dashboard" && pathname.startsWith(item.url))
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
@@ -158,7 +169,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
 
         {/* Secondary Navigation (Bottom) */}
-        <div className="mt-auto">
+        {!pathname.startsWith("/admin") && (
+          <div className="mt-auto">
           <SidebarMenu className="px-2 space-y-1">
             {data.navSecondary.map((item) => {
               const isActive = pathname === item.url
@@ -178,8 +190,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenuItem>
               )
             })}
-          </SidebarMenu>
-        </div>
+            </SidebarMenu>
+          </div>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border/50 p-4">
