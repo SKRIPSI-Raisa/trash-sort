@@ -63,11 +63,18 @@ export default function LoginPage() {
 
     // Check role
     if (data.user) {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", data.user.id)
-        .single()
+        .maybeSingle()
+        
+      if (profileError) {
+        console.error("Login: Error fetching profile:", profileError)
+      }
+      if (!profile) {
+        console.warn("Login: Profile not found for user id:", data.user.id)
+      }
       
       setIsLoading(false)
       toast.success("Login Berhasil!")

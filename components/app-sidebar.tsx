@@ -80,17 +80,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     async function fetchProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from("profiles")
-          .select("name, role, avatar_url")
+          .select("nama_admin, role")
           .eq("id", user.id)
-          .single()
+          .maybeSingle()
+        
+        if (error) {
+          console.error("AppSidebar: Error fetching profile. RLS might be blocking or query failed:", error)
+        }
+        if (!profile) {
+          console.warn("AppSidebar: Profile not found for user id:", user.id, "- Check if user exists in profiles table and RLS is disabled/configured.")
+        }
         
         if (profile) {
           setUserProfile({
-            name: profile.name || "User",
+            name: profile.nama_admin || "User",
             role: profile.role || "user",
-            avatarUrl: profile.avatar_url || undefined
+            avatarUrl: undefined
           })
         } else {
           setUserProfile({
@@ -210,8 +217,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </div>
             )}
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold truncate" title={userProfile?.name || "Memuat..."}>
-                {userProfile?.name || "Memuat..."}
+              <span className="text-sm font-semibold truncate" title={userProfile?.role === "admin" ? "Admin" : (userProfile?.name || "Memuat...")}>
+                {userProfile?.role === "admin" ? "Admin" : (userProfile?.name || "Memuat...")}
               </span>
               <span className="text-xs text-muted-foreground truncate capitalize">
                 {userProfile?.role === "admin" ? "Administrator" : "Umum"}

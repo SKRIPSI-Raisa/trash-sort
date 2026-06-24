@@ -25,11 +25,18 @@ export default function AdminLayout({
         return
       }
       
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", session.user.id)
-        .single()
+        .maybeSingle()
+        
+      if (error) {
+        console.error("AdminLayout: Error fetching profile:", error)
+      }
+      if (!profile) {
+        console.warn("AdminLayout: Profile not found for user id:", session.user.id)
+      }
         
       if (profile?.role !== "admin") {
         router.push("/dashboard")

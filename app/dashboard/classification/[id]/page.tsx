@@ -231,7 +231,7 @@ ${result.neighbors.map(n => `#${n.rank}. Kelas: ${n.label} | Kategori: ${n.categ
               </div>
               <div className="flex justify-between">
                 <span>Fitur Visual:</span>
-                <span className="font-semibold text-foreground">Histogram + LBP</span>
+                <span className="font-semibold text-foreground">RGB + GLCM</span>
               </div>
               <div className="flex justify-between">
                 <span>Pra-pemrosesan:</span>
