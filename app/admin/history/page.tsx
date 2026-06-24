@@ -207,27 +207,27 @@ export default function Page() {
   return (
     <div className="space-y-6 px-4 lg:px-6">
       {/* Page Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-extrabold tracking-tight">Riwayat Klasifikasi</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Riwayat Klasifikasi</h1>
           <p className="text-muted-foreground text-sm">
             Daftar audit seluruh gambar sampah rumah tangga yang pernah diproses.
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Export CSV */}
-          <Button variant="outline" onClick={handleExportCSV} disabled={history.length === 0} className="rounded-xl">
+          <Button variant="outline" onClick={handleExportCSV} disabled={history.length === 0} className="rounded-xl flex-1 sm:flex-none">
             <IconDownload className="size-4 mr-2" />
-            Ekspor CSV
+            <span className="sm:inline">Ekspor CSV</span>
           </Button>
 
           {/* Clear All Drawer */}
           <Drawer open={clearAllOpen} onOpenChange={setClearAllOpen}>
             <DrawerTrigger asChild>
-              <Button variant="destructive" disabled={history.length === 0} className="rounded-xl">
+              <Button variant="destructive" disabled={history.length === 0} className="rounded-xl flex-1 sm:flex-none">
                 <IconTrashX className="size-4 mr-2" />
-                Kosongkan
+                <span className="sm:inline">Kosongkan</span>
               </Button>
             </DrawerTrigger>
             <DrawerContent>
@@ -258,8 +258,8 @@ export default function Page() {
       {/* Main Table Card */}
       <Card>
         {/* Search & Filter Header */}
-        <CardHeader className="pb-3 border-b flex flex-col md:flex-row md:items-center justify-between gap-4 space-y-0">
-          <div className="relative w-full md:max-w-sm">
+        <CardHeader className="pb-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3 space-y-0">
+          <div className="relative w-full sm:max-w-sm">
             <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               type="text"
@@ -273,8 +273,8 @@ export default function Page() {
             />
           </div>
           
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground font-semibold uppercase whitespace-nowrap">Filter Prediksi:</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground font-semibold uppercase whitespace-nowrap">Filter:</span>
             <Select
               value={filterType}
               onValueChange={(val: any) => {
@@ -282,7 +282,7 @@ export default function Page() {
                 setCurrentPage(1)
               }}
             >
-              <SelectTrigger className="w-36 rounded-xl">
+              <SelectTrigger className="w-32 sm:w-36 rounded-xl">
                 <SelectValue placeholder="Semua" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
@@ -294,7 +294,7 @@ export default function Page() {
           </div>
         </CardHeader>
 
-        {/* Content Table */}
+        {/* Content: Card list for mobile, Table for desktop */}
         <CardContent className="p-0">
           {paginatedData.length === 0 ? (
             <div className="p-8">
@@ -309,109 +309,179 @@ export default function Page() {
               />
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
-                <thead>
-                  <tr className="border-b bg-muted/30 text-xs font-semibold uppercase text-muted-foreground select-none">
-                    <th className="p-4 w-16">Pratinjau</th>
-                    <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("filename")}>
-                      <div className="flex items-center gap-1.5">
-                        Nama File
-                        <IconArrowsUpDown className="size-3.5" />
-                      </div>
-                    </th>
-                    <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("prediction")}>
-                      <div className="flex items-center gap-1.5">
-                        Kategori
-                        <IconArrowsUpDown className="size-3.5" />
-                      </div>
-                    </th>
-                    <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("confidence")}>
-                      <div className="flex items-center gap-1.5">
-                        Confidence
-                        <IconArrowsUpDown className="size-3.5" />
-                      </div>
-                    </th>
-                    <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("created_at")}>
-                      <div className="flex items-center gap-1.5">
-                        Tanggal diproses
-                        <IconArrowsUpDown className="size-3.5" />
-                      </div>
-                    </th>
-                    <th className="p-4 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y text-sm">
-                  {paginatedData.map((item) => (
-                    <tr key={item.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="p-4">
-                        <div className="size-10 rounded-lg bg-muted flex items-center justify-center overflow-hidden border">
-                          <img
-                            src={item.original_image_url}
-                            alt={item.filename}
-                            className="size-full object-contain p-1"
-                          />
-                        </div>
-                      </td>
-                      <td className="p-4 font-semibold max-w-[200px] truncate" title={item.filename}>
+            <>
+              {/* ── MOBILE CARD LIST (< md) ── */}
+              <div className="md:hidden divide-y">
+                {paginatedData.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 p-4 hover:bg-muted/5 transition-colors">
+                    {/* Thumbnail */}
+                    <div className="size-14 rounded-xl bg-muted flex items-center justify-center overflow-hidden border shrink-0">
+                      <img
+                        src={item.original_image_url}
+                        alt={item.filename}
+                        className="size-full object-contain p-1"
+                      />
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" title={item.filename}>
                         {item.filename}
-                      </td>
-                      <td className="p-4">
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
                         <WasteBadge prediction={item.prediction} />
-                      </td>
-                      <td className="p-4 min-w-[150px]">
+                      </div>
+                      <div className="mt-1.5">
                         <ConfidenceBar value={item.confidence} prediction={item.prediction} showText={false} size="sm" />
-                        <span className="text-xs text-muted-foreground mt-1 block">
-                          {Math.round(item.confidence * 100)}%
-                        </span>
-                      </td>
-                      <td className="p-4 text-muted-foreground whitespace-nowrap">
+                        <span className="text-[10px] text-muted-foreground">{Math.round(item.confidence * 100)}% confidence</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
                         {new Date(item.created_at).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
+                          day: "numeric", month: "short", year: "numeric",
+                          hour: "2-digit", minute: "2-digit",
                         })}
-                      </td>
-                      <td className="p-4 text-right whitespace-nowrap">
-                        <div className="flex justify-end gap-1.5">
-                          {/* Delete Item Drawer */}
-                          <Drawer>
-                            <DrawerTrigger asChild>
-                              <Button variant="outline" size="icon" className="rounded-lg h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20" title="Hapus">
-                                <IconTrash className="size-4" />
-                              </Button>
-                            </DrawerTrigger>
-                            <DrawerContent>
-                              <div className="mx-auto w-full max-w-sm">
-                                <DrawerHeader className="text-center">
-                                  <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-2">
-                                    <IconAlertCircle className="size-6" />
-                                  </div>
-                                  <DrawerTitle>Hapus Item Riwayat?</DrawerTitle>
-                                  <DrawerDescription>
-                                    Menghapus riwayat klasifikasi untuk file &quot;{item.filename}&quot; secara permanen.
-                                  </DrawerDescription>
-                                </DrawerHeader>
-                                <DrawerFooter>
-                                  <Button variant="destructive" onClick={() => handleDeleteItem(item.id)} className="rounded-xl">
-                                    Ya, Hapus
-                                  </Button>
-                                  <DrawerClose asChild>
-                                    <Button variant="outline" className="rounded-xl">Batal</Button>
-                                  </DrawerClose>
-                                </DrawerFooter>
-                              </div>
-                            </DrawerContent>
-                          </Drawer>
+                      </p>
+                    </div>
+
+                    {/* Delete button */}
+                    <Drawer>
+                      <DrawerTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="rounded-xl h-9 w-9 shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
+                          title="Hapus"
+                        >
+                          <IconTrash className="size-4" />
+                        </Button>
+                      </DrawerTrigger>
+                      <DrawerContent>
+                        <div className="mx-auto w-full max-w-sm">
+                          <DrawerHeader className="text-center">
+                            <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-2">
+                              <IconAlertCircle className="size-6" />
+                            </div>
+                            <DrawerTitle>Hapus Item Riwayat?</DrawerTitle>
+                            <DrawerDescription>
+                              Menghapus riwayat klasifikasi untuk file &quot;{item.filename}&quot; secara permanen.
+                            </DrawerDescription>
+                          </DrawerHeader>
+                          <DrawerFooter>
+                            <Button variant="destructive" onClick={() => handleDeleteItem(item.id)} className="rounded-xl">
+                              Ya, Hapus
+                            </Button>
+                            <DrawerClose asChild>
+                              <Button variant="outline" className="rounded-xl">Batal</Button>
+                            </DrawerClose>
+                          </DrawerFooter>
                         </div>
-                      </td>
+                      </DrawerContent>
+                    </Drawer>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── DESKTOP TABLE (≥ md) ── */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse text-left">
+                  <thead>
+                    <tr className="border-b bg-muted/30 text-xs font-semibold uppercase text-muted-foreground select-none">
+                      <th className="p-4 w-16">Pratinjau</th>
+                      <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("filename")}>
+                        <div className="flex items-center gap-1.5">
+                          Nama File
+                          <IconArrowsUpDown className="size-3.5" />
+                        </div>
+                      </th>
+                      <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("prediction")}>
+                        <div className="flex items-center gap-1.5">
+                          Kategori
+                          <IconArrowsUpDown className="size-3.5" />
+                        </div>
+                      </th>
+                      <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("confidence")}>
+                        <div className="flex items-center gap-1.5">
+                          Confidence
+                          <IconArrowsUpDown className="size-3.5" />
+                        </div>
+                      </th>
+                      <th className="p-4 cursor-pointer hover:text-foreground" onClick={() => handleSort("created_at")}>
+                        <div className="flex items-center gap-1.5">
+                          Tanggal diproses
+                          <IconArrowsUpDown className="size-3.5" />
+                        </div>
+                      </th>
+                      <th className="p-4 text-right">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y text-sm">
+                    {paginatedData.map((item) => (
+                      <tr key={item.id} className="hover:bg-muted/10 transition-colors">
+                        <td className="p-4">
+                          <div className="size-10 rounded-lg bg-muted flex items-center justify-center overflow-hidden border">
+                            <img
+                              src={item.original_image_url}
+                              alt={item.filename}
+                              className="size-full object-contain p-1"
+                            />
+                          </div>
+                        </td>
+                        <td className="p-4 font-semibold max-w-[200px] truncate" title={item.filename}>
+                          {item.filename}
+                        </td>
+                        <td className="p-4">
+                          <WasteBadge prediction={item.prediction} />
+                        </td>
+                        <td className="p-4 min-w-[150px]">
+                          <ConfidenceBar value={item.confidence} prediction={item.prediction} showText={false} size="sm" />
+                          <span className="text-xs text-muted-foreground mt-1 block">
+                            {Math.round(item.confidence * 100)}%
+                          </span>
+                        </td>
+                        <td className="p-4 text-muted-foreground whitespace-nowrap">
+                          {new Date(item.created_at).toLocaleDateString("id-ID", {
+                            day: "numeric", month: "short", year: "numeric",
+                            hour: "2-digit", minute: "2-digit",
+                          })}
+                        </td>
+                        <td className="p-4 text-right whitespace-nowrap">
+                          <div className="flex justify-end gap-1.5">
+                            <Drawer>
+                              <DrawerTrigger asChild>
+                                <Button variant="outline" size="icon" className="rounded-lg h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20" title="Hapus">
+                                  <IconTrash className="size-4" />
+                                </Button>
+                              </DrawerTrigger>
+                              <DrawerContent>
+                                <div className="mx-auto w-full max-w-sm">
+                                  <DrawerHeader className="text-center">
+                                    <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-2">
+                                      <IconAlertCircle className="size-6" />
+                                    </div>
+                                    <DrawerTitle>Hapus Item Riwayat?</DrawerTitle>
+                                    <DrawerDescription>
+                                      Menghapus riwayat klasifikasi untuk file &quot;{item.filename}&quot; secara permanen.
+                                    </DrawerDescription>
+                                  </DrawerHeader>
+                                  <DrawerFooter>
+                                    <Button variant="destructive" onClick={() => handleDeleteItem(item.id)} className="rounded-xl">
+                                      Ya, Hapus
+                                    </Button>
+                                    <DrawerClose asChild>
+                                      <Button variant="outline" className="rounded-xl">Batal</Button>
+                                    </DrawerClose>
+                                  </DrawerFooter>
+                                </div>
+                              </DrawerContent>
+                            </Drawer>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </CardContent>
 

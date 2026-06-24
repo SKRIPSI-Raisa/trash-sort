@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD WasteSort</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background-color: #f9f9f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; overflow-x: auto; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Entity Relationship Diagram - WasteSort</h1>
+    <div class="card">
+        <div class="mermaid">
+erDiagram
+    profiles {
+        uuid id PK "FK ke auth.users"
+        text nama_admin
+        text email
+        text role
+        timestamptz created_at
+    }
+
+    session_pengunjung {
+        text session_id PK
+        timestamptz created_at
+        timestamptz last_activity
+    }
+
+    kategori_sampah {
+        int4 kategori_id PK "Identity / Auto Increment"
+        text nama_kategori
+        text deskripsi
+        text rekomendasi
+    }
+
+    hasil_klasifikasi {
+        text klasifikasi_id PK
+        text session_id FK "FK ke session_pengunjung"
+        int4 kategori_id FK "FK ke kategori_sampah"
+        text nama_gambar
+        text path_gambar
+        float8 confidence
+        timestamptz tanggal_klasifikasi
+    }
+
+    session_pengunjung ||--o{ hasil_klasifikasi : "memiliki"
+    kategori_sampah ||--o{ hasil_klasifikasi : "menghasilkan"
+        </div>
+    </div>
+</body>
+</html>

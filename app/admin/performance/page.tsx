@@ -74,14 +74,14 @@ export default function Page() {
     <div className="space-y-6 px-4 lg:px-6">
       {/* Page Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-extrabold tracking-tight">Performa Model KNN</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Performa Model KNN</h1>
         <p className="text-muted-foreground text-sm">
           Evaluasi mendalam mengenai performa klasifikasi KNN dan analisis parameter optimalisasi model.
         </p>
       </div>
 
       {/* 4 Metric Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <MetricCard
           title="Akurasi Keseluruhan (Accuracy)"
           value={accuracy}

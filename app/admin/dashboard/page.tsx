@@ -65,9 +65,9 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-8 px-4 lg:px-6 pb-10">
+    <div className="space-y-6 sm:space-y-8 px-4 lg:px-6 pb-10">
       {/* Header section with gradient */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900 via-emerald-950 to-background p-8 md:p-10 border border-emerald-900/50 shadow-2xl shadow-emerald-900/20">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-900 via-emerald-950 to-background p-6 sm:p-8 md:p-10 border border-emerald-900/50 shadow-2xl shadow-emerald-900/20">
         <div className="absolute inset-0 pointer-events-none opacity-20" style={{
           backgroundImage: "radial-gradient(circle, rgba(52,211,153,0.3) 1px, transparent 1px)",
           backgroundSize: "24px 24px",
@@ -79,17 +79,17 @@ export default function AdminDashboard() {
             <IconRecycle className="size-3.5" />
             TrashSort Admin
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
             Dashboard Utama
           </h1>
-          <p className="text-emerald-100/70 text-sm md:text-base leading-relaxed">
+          <p className="text-emerald-100/70 text-sm leading-relaxed">
             Pantau ringkasan seluruh aktivitas sistem, statistik klasifikasi sampah secara real-time, dan evaluasi performa model.
           </p>
         </div>
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-5 grid-cols-2 lg:grid-cols-4">
         {/* Total Scans */}
         <Card className="rounded-2xl border-white/5 bg-white/5 backdrop-blur-sm shadow-xl relative overflow-hidden group">
           <div className="absolute right-0 top-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:opacity-20">
@@ -162,11 +162,11 @@ export default function AdminDashboard() {
 
       {/* Main Content Area */}
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Recent Classifications Table */}
+        {/* Recent Classifications - mobile card list + desktop table */}
         <Card className="md:col-span-2 rounded-2xl border-border/50 shadow-lg overflow-hidden">
           <CardHeader className="bg-muted/20 border-b flex flex-row items-center justify-between py-4">
             <div>
-              <CardTitle className="text-lg">Klasifikasi Terbaru</CardTitle>
+              <CardTitle className="text-base sm:text-lg">Klasifikasi Terbaru</CardTitle>
               <CardDescription>5 data gambar terakhir yang diproses sistem.</CardDescription>
             </div>
             <Button variant="outline" size="sm" asChild className="rounded-xl hidden sm:flex">
@@ -181,39 +181,63 @@ export default function AdminDashboard() {
                 Belum ada data klasifikasi.
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead className="bg-muted/10 text-xs uppercase text-muted-foreground font-semibold">
-                    <tr>
-                      <th className="p-4 w-12">Gambar</th>
-                      <th className="p-4">Kategori</th>
-                      <th className="p-4">Confidence</th>
-                      <th className="p-4 text-right">Waktu</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/50">
-                    {recentHistory.map((item) => (
-                      <tr key={item.id} className="hover:bg-muted/5 transition-colors">
-                        <td className="p-4">
-                          <div className="size-10 rounded-xl overflow-hidden bg-muted border">
-                            <img src={item.original_image_url} alt="scan" className="w-full h-full object-cover" />
-                          </div>
-                        </td>
-                        <td className="p-4 font-medium">
-                          <WasteBadge prediction={item.prediction} />
-                        </td>
-                        <td className="p-4 w-40">
+              <>
+                {/* Mobile card list */}
+                <div className="sm:hidden divide-y">
+                  {recentHistory.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3 p-3">
+                      <div className="size-12 rounded-xl overflow-hidden bg-muted border shrink-0">
+                        <img src={item.original_image_url} alt="scan" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <WasteBadge prediction={item.prediction} />
+                        <div className="mt-1">
                           <ConfidenceBar value={item.confidence} prediction={item.prediction} showText={false} size="sm" />
-                          <span className="text-[10px] text-muted-foreground mt-1">{Math.round(item.confidence * 100)}%</span>
-                        </td>
-                        <td className="p-4 text-right text-xs text-muted-foreground whitespace-nowrap">
-                          {new Date(item.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
-                        </td>
+                          <span className="text-[10px] text-muted-foreground">{Math.round(item.confidence * 100)}%</span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                        {new Date(item.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop table */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-muted/10 text-xs uppercase text-muted-foreground font-semibold">
+                      <tr>
+                        <th className="p-4 w-12">Gambar</th>
+                        <th className="p-4">Kategori</th>
+                        <th className="p-4">Confidence</th>
+                        <th className="p-4 text-right">Waktu</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-border/50">
+                      {recentHistory.map((item) => (
+                        <tr key={item.id} className="hover:bg-muted/5 transition-colors">
+                          <td className="p-4">
+                            <div className="size-10 rounded-xl overflow-hidden bg-muted border">
+                              <img src={item.original_image_url} alt="scan" className="w-full h-full object-cover" />
+                            </div>
+                          </td>
+                          <td className="p-4 font-medium">
+                            <WasteBadge prediction={item.prediction} />
+                          </td>
+                          <td className="p-4 w-40">
+                            <ConfidenceBar value={item.confidence} prediction={item.prediction} showText={false} size="sm" />
+                            <span className="text-[10px] text-muted-foreground mt-1">{Math.round(item.confidence * 100)}%</span>
+                          </td>
+                          <td className="p-4 text-right text-xs text-muted-foreground whitespace-nowrap">
+                            {new Date(item.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
             <div className="p-4 border-t bg-muted/10 sm:hidden">
               <Button variant="outline" size="sm" className="w-full rounded-xl" asChild>
