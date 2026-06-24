@@ -19,11 +19,6 @@ const userNavItems = [
     icon: IconLayoutDashboard,
   },
   {
-    label: "Performa",
-    url: "/dashboard/performance",
-    icon: IconChartBar,
-  },
-  {
     label: "Klasifikasi",
     url: "/dashboard/classification",
     icon: IconRecycle,
@@ -63,11 +58,6 @@ const adminNavItems = [
     label: "Performa",
     url: "/admin/performance",
     icon: IconChartBar,
-  },
-  {
-    label: "Beranda",
-    url: "/dashboard",
-    icon: IconRecycle,
   },
 ]
 

@@ -269,58 +269,13 @@ export default function LandingPage() {
 
 
             {/* Auth buttons */}
-            <div className="hidden items-center gap-3 md:flex">
+            <div className="flex items-center gap-3">
               <Button variant="ghost" size="sm" className="rounded-full" asChild>
                 <Link href="/login">Login Admin</Link>
               </Button>
-              <Button
-                size="sm"
-                className="rounded-full px-5 shadow-md shadow-primary/20 hover:shadow-primary/35 transition-shadow"
-                asChild
-              >
-                {/* {<Link href="/register">Register</Link>} */}
-              </Button>
             </div>
-
-            {/* Mobile toggle */}
-            <button
-              className="rounded-lg p-2 hover:bg-muted md:hidden"
-              onClick={() => setMobileMenuOpen((v) => !v)}
-            >
-              {mobileMenuOpen ? (
-                <IconX className="h-5 w-5" />
-              ) : (
-                <IconMenu2 className="h-5 w-5" />
-              )}
-            </button>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="border-t border-border bg-background/95 backdrop-blur-xl md:hidden">
-            <div className="space-y-3 px-4 py-4">
-              {["Fitur", "Cara Kerja", "Teknologi"].map((label) => (
-                <a
-                  key={label}
-                  href={`#${label.toLowerCase().replace(" ", "-")}`}
-                  className="block text-sm text-muted-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {label}
-                </a>
-              ))}
-              <div className="flex gap-3 pt-2">
-                <Button variant="outline" size="sm" className="flex-1 rounded-full" asChild>
-                  <Link href="/login">Masuk</Link>
-                </Button>
-                <Button size="sm" className="flex-1 rounded-full" asChild>
-                  {/*<Link href="/register">Daftar</Link>*/}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* ── Hero ── */}
