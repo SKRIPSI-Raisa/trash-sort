@@ -114,15 +114,23 @@ function mapDbToClassificationResult(item: ScanHistoryRow): ClassificationResult
   }
 }
 
-// Read history for current visitor (using session_id)
+// Read history for current visitor (using session_id) or logged in user
 export async function getHistory(): Promise<ClassificationResult[]> {
   const sessionId = getOrCreateSessionId()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("hasil_klasifikasi")
     .select("*")
-    .eq("session_id", sessionId)
     .order("tanggal_klasifikasi", { ascending: false })
+
+  if (user) {
+    query = query.eq("user_id", user.id)
+  } else {
+    query = query.eq("session_id", sessionId)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     console.warn("Supabase fetch fallback to localStorage:", error?.message || "unknown")
@@ -232,15 +240,19 @@ export async function deleteHistoryItem(id: string): Promise<void> {
   saveLocalHistory(updated)
 }
 
-// Clear all history for current visitor session
+// Clear all history for current visitor session or logged in user
 export async function clearHistory(): Promise<void> {
   const sessionId = getOrCreateSessionId()
+  const { data: { user } } = await supabase.auth.getUser()
 
   try {
-    const { error } = await supabase
-      .from("hasil_klasifikasi")
-      .delete()
-      .eq("session_id", sessionId)
+    let query = supabase.from("hasil_klasifikasi").delete()
+    if (user) {
+      query = query.eq("user_id", user.id)
+    } else {
+      query = query.eq("session_id", sessionId)
+    }
+    const { error } = await query
 
     if (error?.message) {
       console.warn("DB clear fallback:", error.message)
@@ -449,18 +461,27 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
     publicUrl = url
   }
 
+  // Cek apakah user sedang login untuk menyertakan user_id
+  const { data: { user } } = await supabase.auth.getUser()
+
   // 3. Simpan hasil klasifikasi ke tabel 'hasil_klasifikasi'
+  const payload: any = {
+    klasifikasi_id: apiResult.id,
+    session_id: sessionId,
+    kategori_id: apiResult.prediction === "Organik" ? 1 : 2,
+    nama_gambar: apiResult.filename,
+    path_gambar: publicUrl,
+    confidence: apiResult.confidence,
+    tanggal_klasifikasi: apiResult.created_at
+  }
+
+  if (user) {
+    payload.user_id = user.id
+  }
+
   const { data: insertData, error: insertError } = await supabase
     .from("hasil_klasifikasi")
-    .insert({
-      klasifikasi_id: apiResult.id,
-      session_id: sessionId,
-      kategori_id: apiResult.prediction === "Organik" ? 1 : 2,
-      nama_gambar: apiResult.filename,
-      path_gambar: publicUrl,
-      confidence: apiResult.confidence,
-      tanggal_klasifikasi: apiResult.created_at
-    })
+    .insert(payload)
     .select()
     .single()
 
