@@ -46,7 +46,7 @@ function generateMockNeighbors(
   confidence: number,
   id: string
 ) {
-  const k_value = 7
+  const k_value = 11
   const seedNum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
 
   return Array.from({ length: k_value }).map((_, index) => {
@@ -101,7 +101,7 @@ function mapDbToClassificationResult(item: ScanHistoryRow): ClassificationResult
     filename: item.nama_gambar || "sampah.jpg",
     prediction,
     confidence,
-    k_value: 7,
+    k_value: 11,
     neighbors,
     original_image_url: item.path_gambar || "",
     preprocessing: {
@@ -163,7 +163,7 @@ export async function getAllHistory(): Promise<ClassificationResult[]> {
         filename: "apel_sisa_makanan.jpg",
         prediction: "Organik",
         confidence: 0.942,
-        k_value: 7,
+        k_value: 11,
         neighbors: [],
         original_image_url: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&auto=format&fit=crop&q=80",
         preprocessing: { resized_to: [128, 128], normalized: true },
@@ -176,7 +176,7 @@ export async function getAllHistory(): Promise<ClassificationResult[]> {
         filename: "botol_plastik_bekas.jpg",
         prediction: "Non-Organik",
         confidence: 0.885,
-        k_value: 7,
+        k_value: 11,
         neighbors: [],
         original_image_url: "https://images.unsplash.com/photo-1528323273322-d81458248d40?w=300&auto=format&fit=crop&q=80",
         preprocessing: { resized_to: [128, 128], normalized: true },
@@ -189,7 +189,7 @@ export async function getAllHistory(): Promise<ClassificationResult[]> {
         filename: "daun_kering_gugur.jpg",
         prediction: "Organik",
         confidence: 0.91,
-        k_value: 7,
+        k_value: 11,
         neighbors: [],
         original_image_url: "https://images.unsplash.com/photo-1505820013142-f86a3439c5b2?w=300&auto=format&fit=crop&q=80",
         preprocessing: { resized_to: [128, 128], normalized: true },
@@ -404,7 +404,7 @@ export async function classifyImage(file: File): Promise<ClassificationResult> {
     confidence: typeof rawResult.confidence === 'number'
       ? rawResult.confidence
       : (typeof rawResult.confidence_percent === 'number' ? rawResult.confidence_percent / 100 : 1.0),
-    k_value: rawResult.k_value || rawResult.k_neighbors_count || 11,
+    k_value: rawResult.k_value || rawResult.k_neighbors_count || 13,
     neighbors: (rawResult.neighbors || []).map((n: any) => {
       const label = (n.label === "organik" || n.label === "Organik") ? "Organik" : "Non-Organik"
       const categories = label === "Organik"

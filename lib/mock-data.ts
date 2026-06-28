@@ -18,7 +18,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "daun_kering_kebun.jpg",
     prediction: "Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Dedaunan", distance: 0.042, thumbnail_url: SVGS.leaf },
       { rank: 2, label: "Organik", category: "Dedaunan", distance: 0.051, thumbnail_url: SVGS.leaf },
@@ -39,7 +39,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "botol_minum_plastik.png",
     prediction: "Non-Organik",
     confidence: 0.857,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Botol Plastik", distance: 0.031, thumbnail_url: SVGS.bottle },
       { rank: 2, label: "Non-Organik", category: "Botol Plastik", distance: 0.045, thumbnail_url: SVGS.bottle },
@@ -60,7 +60,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "sisa_apel_merah.jpg",
     prediction: "Organik",
     confidence: 0.857,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Buah", distance: 0.022, thumbnail_url: SVGS.apple },
       { rank: 2, label: "Organik", category: "Sisa Buah", distance: 0.035, thumbnail_url: SVGS.apple },
@@ -81,7 +81,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kardus_bekas_paket.png",
     prediction: "Non-Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Kardus/Karton", distance: 0.012, thumbnail_url: SVGS.box },
       { rank: 2, label: "Non-Organik", category: "Kardus/Karton", distance: 0.028, thumbnail_url: SVGS.box },
@@ -102,7 +102,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kulit_pisang_raja.jpg",
     prediction: "Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Buah", distance: 0.015, thumbnail_url: SVGS.banana },
       { rank: 2, label: "Organik", category: "Sisa Buah", distance: 0.024, thumbnail_url: SVGS.banana },
@@ -123,7 +123,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kaleng_soda_cola.png",
     prediction: "Non-Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Kaleng Minuman", distance: 0.025, thumbnail_url: SVGS.can },
       { rank: 2, label: "Non-Organik", category: "Kaleng Minuman", distance: 0.038, thumbnail_url: SVGS.can },
@@ -144,7 +144,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "sayur_sawi_basi.jpg",
     prediction: "Organik",
     confidence: 0.714,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Sayuran", distance: 0.052, thumbnail_url: SVGS.leaf },
       { rank: 2, label: "Organik", category: "Sisa Sayuran", distance: 0.069, thumbnail_url: SVGS.leaf },
@@ -165,7 +165,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kantong_kresek_putih.png",
     prediction: "Non-Organik",
     confidence: 0.857,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Kantong Plastik", distance: 0.035, thumbnail_url: SVGS.paper },
       { rank: 2, label: "Non-Organik", category: "Kantong Plastik", distance: 0.048, thumbnail_url: SVGS.paper },
@@ -186,7 +186,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "sisa_roti_jamuran.jpg",
     prediction: "Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Makanan", distance: 0.021, thumbnail_url: SVGS.orange },
       { rank: 2, label: "Organik", category: "Sisa Makanan", distance: 0.039, thumbnail_url: SVGS.orange },
@@ -207,7 +207,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kertas_hvs_bekas.png",
     prediction: "Non-Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Kertas/Buku", distance: 0.009, thumbnail_url: SVGS.paper },
       { rank: 2, label: "Non-Organik", category: "Kertas/Buku", distance: 0.021, thumbnail_url: SVGS.paper },
@@ -228,7 +228,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kulit_jeruk_manis.jpg",
     prediction: "Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Buah", distance: 0.019, thumbnail_url: SVGS.orange },
       { rank: 2, label: "Organik", category: "Sisa Buah", distance: 0.028, thumbnail_url: SVGS.orange },
@@ -249,7 +249,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "gelas_plastik_popice.png",
     prediction: "Non-Organik",
     confidence: 0.857,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Gelas Plastik", distance: 0.038, thumbnail_url: SVGS.bottle },
       { rank: 2, label: "Non-Organik", category: "Gelas Plastik", distance: 0.049, thumbnail_url: SVGS.bottle },
@@ -270,7 +270,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "nasi_putih_basi.jpg",
     prediction: "Organik",
     confidence: 1.0,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Makanan", distance: 0.024, thumbnail_url: SVGS.orange },
       { rank: 2, label: "Organik", category: "Sisa Makanan", distance: 0.035, thumbnail_url: SVGS.orange },
@@ -291,7 +291,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "kemasan_snack_chiki.png",
     prediction: "Non-Organik",
     confidence: 0.714,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Non-Organik", category: "Kemasan Plastik", distance: 0.061, thumbnail_url: SVGS.bottle },
       { rank: 2, label: "Non-Organik", category: "Kemasan Plastik", distance: 0.075, thumbnail_url: SVGS.bottle },
@@ -312,7 +312,7 @@ export const mockHistory: ClassificationResult[] = [
     filename: "tulang_ayam_goreng.jpg",
     prediction: "Organik",
     confidence: 0.857,
-    k_value: 7,
+    k_value: 11,
     neighbors: [
       { rank: 1, label: "Organik", category: "Sisa Makanan", distance: 0.038, thumbnail_url: SVGS.orange },
       { rank: 2, label: "Organik", category: "Sisa Makanan", distance: 0.051, thumbnail_url: SVGS.orange },
@@ -331,43 +331,41 @@ export const mockHistory: ClassificationResult[] = [
 ]
 
 export const mockMetrics: ModelMetrics = {
-  accuracy: 0.895,
-  precision: 0.901,
-  recall: 0.888,
-  f1_score: 0.894,
-  k_optimal: 7,
+  accuracy: 0.8361,
+  precision: 0.85,
+  recall: 0.8361,
+  f1_score: 0.8327,
+  k_optimal: 11,
   confusion_matrix: {
-    tp: 445, // Predicted Organik, Actual Organik
-    tn: 450, // Predicted Non-Organik, Actual Non-Organik
-    fp: 44,  // Predicted Organik, Actual Non-Organik
-    fn: 61   // Predicted Non-Organik, Actual Organik
+    tp: 1313, // Predicted Organik, Actual Organik
+    tn: 788,  // Predicted Non-Organik, Actual Non-Organik
+    fp: 88,   // Predicted Organik, Actual Non-Organik
+    fn: 324   // Predicted Non-Organik, Actual Organik
   },
   k_curve: [
-    { k: 1, accuracy: 0.812 },
-    { k: 3, accuracy: 0.845 },
-    { k: 5, accuracy: 0.878 },
-    { k: 7, accuracy: 0.895 },
-    { k: 9, accuracy: 0.887 },
-    { k: 11, accuracy: 0.881 },
-    { k: 13, accuracy: 0.874 },
-    { k: 15, accuracy: 0.868 },
-    { k: 17, accuracy: 0.862 },
-    { k: 19, accuracy: 0.859 }
+    { k: 1, accuracy: 0.790 },
+    { k: 3, accuracy: 0.815 },
+    { k: 5, accuracy: 0.819 },
+    { k: 7, accuracy: 0.827 },
+    { k: 9, accuracy: 0.832 },
+    { k: 11, accuracy: 0.836 },
+    { k: 13, accuracy: 0.834 },
+    { k: 15, accuracy: 0.834 }
   ],
   distance_comparison: [
-    { metric: "Euclidean", accuracy: 0.895 },
-    { metric: "Manhattan", accuracy: 0.881 },
-    { metric: "Minkowski (p=3)", accuracy: 0.874 },
-    { metric: "Chebyshev", accuracy: 0.862 }
+    { metric: "Euclidean", accuracy: 0.8361 },
+    { metric: "Manhattan", accuracy: 0.8249 },
+    { metric: "Minkowski (p=3)", accuracy: 0.8309 },
+    { metric: "Chebyshev", accuracy: 0.8221 }
   ],
   model_info: {
     algorithm: "K-Nearest Neighbors (KNN)",
-    k_value: 7,
+    k_value: 11,
     input_size: [128, 128, 3],
     classes: ["Organik", "Non-Organik"],
     trained_at: "2026-06-01T08:00:00Z",
-    train_size: 800,
-    test_size: 200
+    train_size: 22564,
+    test_size: 2513
   }
 }
 
