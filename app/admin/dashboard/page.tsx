@@ -9,6 +9,7 @@ import { getAllHistory } from "@/lib/api"
 import { ClassificationResult } from "@/lib/types"
 import { WasteBadge } from "@/components/waste-badge"
 import { ConfidenceBar } from "@/components/confidence-bar"
+import { Area, AreaChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, CartesianGrid } from "recharts"
 import {
   IconUsers,
   IconRecycle,
@@ -45,6 +46,36 @@ export default function AdminDashboard() {
   const avgConfidence = totalScans > 0
     ? history.reduce((acc, curr) => acc + curr.confidence, 0) / totalScans
     : 0
+
+  const trendData = React.useMemo(() => {
+    if (!history.length) return []
+    
+    const grouped = history.reduce((acc, curr) => {
+      const d = new Date(curr.created_at)
+      const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      
+      if (!acc[dateKey]) {
+        acc[dateKey] = { 
+          fullDate: dateKey,
+          date: d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }), 
+          total: 0, 
+          organik: 0, 
+          nonOrganik: 0 
+        }
+      }
+      
+      acc[dateKey].total += 1
+      if (curr.prediction === "Organik") {
+        acc[dateKey].organik += 1
+      } else {
+        acc[dateKey].nonOrganik += 1
+      }
+      
+      return acc
+    }, {} as Record<string, { fullDate: string, date: string, total: number, organik: number, nonOrganik: number }>)
+    
+    return Object.values(grouped).sort((a, b) => a.fullDate.localeCompare(b.fullDate)).slice(-14)
+  }, [history])
 
   const recentHistory = history.slice(0, 5)
 
@@ -159,6 +190,53 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Trend Chart */}
+      <Card className="rounded-2xl border-border/50 shadow-lg overflow-hidden">
+        <CardHeader className="bg-muted/20 border-b py-4">
+          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+            <IconChartBar className="size-5 text-emerald-500" />
+            Tren Klasifikasi Sampah (14 Hari Terakhir)
+          </CardTitle>
+          <CardDescription>
+            Grafik jumlah sampah organik dan non-organik yang diklasifikasikan oleh sistem.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          {trendData.length === 0 ? (
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
+              Belum ada data tren yang tersedia.
+            </div>
+          ) : (
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorOrganik" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorNonOrganik" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}
+                    itemStyle={{ fontSize: '14px' }}
+                    labelStyle={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}
+                  />
+                  <Area type="monotone" dataKey="organik" name="Organik" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorOrganik)" />
+                  <Area type="monotone" dataKey="nonOrganik" name="Non-Organik" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorNonOrganik)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Main Content Area */}
       <div className="grid gap-6 md:grid-cols-3">
